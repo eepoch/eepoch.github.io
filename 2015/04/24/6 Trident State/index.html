@@ -1,0 +1,629 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>6 Trident State | Epoch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Epoch">
+    
+
+    
+    <meta name="description" content="Trident StateTrident has first-class abstractions for reading from and writing to stateful sources. The state 可以在kept in-memory and backed by HDFS 或者是外部的Database。Trident以一种容错的方式来管理状态以至于当你在更新状态的时候你不需要去">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6 Trident State">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/04/24/6 Trident State/index.html">
+<meta property="og:site_name" content="Epoch">
+<meta property="og:description" content="Trident StateTrident has first-class abstractions for reading from and writing to stateful sources. The state 可以在kept in-memory and backed by HDFS 或者是外部的Database。Trident以一种容错的方式来管理状态以至于当你在更新状态的时候你不需要去">
+<meta property="og:image" content="http://storm.apache.org/documentation/images/spout-vs-state.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="6 Trident State">
+<meta name="twitter:description" content="Trident StateTrident has first-class abstractions for reading from and writing to stateful sources. The state 可以在kept in-memory and backed by HDFS 或者是外部的Database。Trident以一种容错的方式来管理状态以至于当你在更新状态的时候你不需要去">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.jpg">
+    
+    
+    <link rel="apple-touch-icon" href="/img/favicon.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/favicon.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Epoch">Epoch</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:www.eechodsmy.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/24/6 Trident State/" title="6 Trident State" itemprop="url">6 Trident State</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="http://www.eechodsmy.com/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
+		
+  <p class="article-time">
+    <time datetime="2015-04-24T01:17:27.000Z" itemprop="datePublished"> 发表于 2015-04-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Trident_State"><span class="toc-number">1.</span> <span class="toc-text">Trident State</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Transactional_spouts"><span class="toc-number">1.1.</span> <span class="toc-text">Transactional spouts</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#how_you_would_design_a_State_implementation_that_has_exactly-once_semantics_for_transactional_spouts-"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">how you would design a State implementation that has exactly-once semantics for transactional spouts.</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#下面的这个场景例子是很重要的。"><span class="toc-number">1.1.0.2.</span> <span class="toc-text">下面的这个场景例子是很重要的。</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Opaque_transactional_spouts"><span class="toc-number">1.2.</span> <span class="toc-text">Opaque transactional spouts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Non-transactional_spouts"><span class="toc-number">1.3.</span> <span class="toc-text">Non-transactional spouts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary_of_spout_and_state_types"><span class="toc-number">1.4.</span> <span class="toc-text">Summary of spout and state types</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#State_APIs"><span class="toc-number">1.5.</span> <span class="toc-text">State APIs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#persistentAggregate"><span class="toc-number">1.6.</span> <span class="toc-text">persistentAggregate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Implementing_Map_States(Try_Once-看完Spouts再来看一下前后2段)"><span class="toc-number">1.7.</span> <span class="toc-text">Implementing Map States(Try Once.看完Spouts再来看一下前后2段)</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="Trident_State">Trident State</h1><p>Trident has first-class abstractions for reading from and writing to stateful sources. The <strong>state</strong> 可以在kept in-memory and backed by HDFS 或者是外部的Database。<br>Trident以一种容错的方式来管理状态以至于当你在更新状态的时候你不需要去考虑错误以及重试的情况。<br>原语保持仅且一次处理：</p>
+<ul>
+<li>Tuples are processed as small batches (see the tutorial)</li>
+<li>Each batch of tuples is given a unique id called the “transaction id” (txid). If the batch is replayed, it is given the exact same txid.</li>
+<li>State updates are ordered among batches. That is, the state updates for batch 3 won’t be applied until the state updates for batch 2 have succeeded.</li>
+</ul>
+<p>有三种不同类型的可以容错的spout:  <strong>非事务的，事务的，以及不透明事务的spout</strong>。对应的，也有3种容错的状态：<strong>非事务的，事务的，以及不透明事务的状态</strong>。让我们一起来看看每一种spout类型能够支持什么样的容错类型。</p>
+<h2 id="Transactional_spouts">Transactional spouts</h2><ul>
+<li><strong>Trident</strong>是以小批量（batch）的形式在处理tuple，并且每一批都会分配一个唯一的 <strong>transaction id</strong>。 </li>
+<li>不同的spout会根据他们可以给予不同的批量tuple的guarantee的能力有不同的属性。</li>
+</ul>
+<p>这个具有下面3点：</p>
+<ol>
+<li>有着同样txid的batch一定是一样的。当重播一个txid对应的batch时，一定会重播和之前对应txid的batch中同样的tuples。</li>
+<li>各个batch之间是没有交集的。每个tuple只能属于一个batch。</li>
+<li>每一个tuple都属于一个batch，无一例外。</li>
+</ol>
+<p>the stream is divided into fixed batches that never change. 这里有个简单的实现: <a href="https://github.com/apache/storm/blob/master/external/storm-kafka/src/jvm/storm/kafka/trident/TransactionalTridentKafkaSpout.java" target="_blank" rel="external">transactional spout for Kafka</a></p>
+<ul>
+<li><strong>TransactionalTridentKafkaSpout</strong> works is the batch for a txid will contain tuples from all the Kafka partitions for a topic.</li>
+<li>TransactionalTridentKafkaSpout 工作的方式是给定一个txid的batch所包含的一个属于一个topic的来自于所有Kafka partition的tuple序列。一旦这个batch被发出，在任何时候如果这个batch被重新发出时，它必须包含原来所有的tuple以满足 transactional spout的语义。</li>
+<li>现在我们假定一个batch被TransactionalTridentKafkaSpout所发出，这个batch没有被成功处理，并且同时kafka的一个节点也down掉了。你就无法像之前一样重播一个完全一样的batch（因为kakfa的节点down掉，该topic的一部分partition可能会无法使用），整个处理会被中断。</li>
+</ul>
+<p>这也就是”opaque transactional” spouts（不透明事务spout）存在的原因- 他们对于丢失源节点这种情况是容错的，仍然能够帮你达到有且只有一次处理的语义。</p>
+<blockquote>
+<p>在Kafka开启replication功能时，transactional spout也是可以做到容错的.</p>
+</blockquote>
+<h4 id="how_you_would_design_a_State_implementation_that_has_exactly-once_semantics_for_transactional_spouts-">how you would design a State implementation that has exactly-once semantics for transactional spouts.</h4><ul>
+<li>This State type is called a “transactional state” </li>
+<li>利用了一条语义原语：第1条——同样txid的batch一定是一样的。</li>
+</ul>
+<h4 id="下面的这个场景例子是很重要的。">下面的这个场景例子是很重要的。</h4><p>假如说你有一个用来计算单词出现次数的topology，你想要将单词的出现次数以key/value对的形式存储到数据库中。key就是单词，value就是这个这个单词出现的次数。</p>
+<ul>
+<li>你已经看到只是存储一个数量是不足以知道你是否已经处理过一个batch的。你可以通过将value和txid一起存储到数据库中。</li>
+<li>这样的话，当更新这个count之前，你可以先去比较数据库中存储的txid和现在要存储的txid。如果一样，就跳过什么都不做，因为这个value之前已经被处理过了。如果不一样，就执行存储。这个逻辑可以工作的前提就是txid永不改变，并且Trident保证状态的更新是在batch之间严格顺序进行的。</li>
+</ul>
+<p><strong>一个例子</strong><br>Suppose you are processing txid 3 which consists of the following batch of tuples:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">"man"</span>]</span><br><span class="line">[<span class="string">"man"</span>]</span><br><span class="line">[<span class="string">"dog"</span>]</span><br></pre></td></tr></table></figure></p>
+<p>Suppose the database currently holds the following key/value pairs:<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">man =</span>&gt; [<span class="variable">count=</span><span class="number">3</span>, <span class="variable">txid=</span><span class="number">1</span>]</span><br><span class="line"><span class="variable">dog =</span>&gt; [<span class="variable">count=</span><span class="number">4</span>, <span class="variable">txid=</span><span class="number">3</span>]</span><br><span class="line"><span class="variable">apple =</span>&gt; [<span class="variable">count=</span><span class="number">10</span>, <span class="variable">txid=</span><span class="number">2</span>]</span><br></pre></td></tr></table></figure></p>
+<p>After completing updates, the database looks like this:<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">man =</span>&gt; [<span class="variable">count=</span><span class="number">5</span>, <span class="variable">txid=</span><span class="number">3</span>]</span><br><span class="line"><span class="variable">dog =</span>&gt; [<span class="variable">count=</span><span class="number">4</span>, <span class="variable">txid=</span><span class="number">3</span>]</span><br><span class="line"><span class="variable">apple =</span>&gt; [<span class="variable">count=</span><span class="number">10</span>, <span class="variable">txid=</span><span class="number">2</span>]</span><br></pre></td></tr></table></figure></p>
+<h2 id="Opaque_transactional_spouts">Opaque transactional spouts</h2><p>opaque transactional spout并不能确保一个txid所对应的batch的一致性。一个opaque transactional spout有如下属性：</p>
+<ul>
+<li>每个tuple只在一个batch中被成功处理。然而，一个tuple在一个batch中被处理失败后，有可能会在另外的一个batch中被成功处理</li>
+<li><a href="https://github.com/apache/storm/tree/master/external/storm-kafka/src/jvm/storm/kafka/trident/OpaqueTridentKafkaSpout.java" target="_blank" rel="external">OpaqueTridentKafkaSpout</a> is a spout that has this property and is fault-tolerant to losing Kafka nodes.</li>
+<li>OpaqueTridentKafkaSpout 发送一个batch的时候, 它会从上个batch成功结束发送的位置开始发送一个tuple序列。这就确保了永远没有任何一个tuple会被跳过或者被放在多个batch中被多次成功处理的情况.</li>
+<li>使用opaque transactional spout，再使用和transactional spout相同的处理方式：判断数据库中存放的txid和当前txid去做对比已经不好用了。这是因为在state的更新过程之间，batch可能已经变了。</li>
+<li>you instead store <strong>a value, transaction id, and the previous value</strong> in the database. </li>
+</ul>
+<p>Suppose the value in the database looks like this:<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="variable">value =</span> <span class="number">4</span>,</span><br><span class="line">  <span class="variable">prevValue =</span> <span class="number">1</span>,</span><br><span class="line">  <span class="variable">txid =</span> <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Suppose your current txid is 3, different than what’s in the database. In this case, you set “prevValue” equal to “value”, increment “value” by your partial count, and update the txid. The new database value will look like this:</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="variable">value =</span> <span class="number">6</span>,</span><br><span class="line">  <span class="variable">prevValue =</span> <span class="number">4</span>,</span><br><span class="line">  <span class="variable">txid =</span> <span class="number">3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在外面再假定你的当前txid是2，和数据库中存放的txid相同。这就说明数据库里面value中的值包含了之前一个和当前txid相同的batch的更新。但是上一个batch和当前这个batch可能已经完全不同了，以至于我们需要无视它。在这种情况下，你需要在prevValue的基础上加上当前count的值并将结果存放到value中去。数据库中的信息如下所示:<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="variable">value =</span> <span class="number">3</span>,</span><br><span class="line">  <span class="variable">prevValue =</span> <span class="number">1</span>,</span><br><span class="line">  <span class="variable">txid =</span> <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<ul>
+<li>Trident保证了batch之间的强顺序性，因此这种方法是有效的。</li>
+<li>一旦Trident去处理一个新的batch，它就不会重新回到之前的任何一个batch。</li>
+<li>由于opaque transactional spout确保在各个batch之间是没有共同成员的，每个tuple只会在一个batch中被成功处理</li>
+</ul>
+</blockquote>
+<h2 id="Non-transactional_spouts">Non-transactional spouts</h2><p>don’t provide any guarantees about what’s in each batch. 可能被处理0、1、多次，全靠自己控制。不可能实现有且只有一次被成功处理的语义的。</p>
+<ul>
+<li>at-most-once processing, in which case tuples are not retried after failed batches.</li>
+<li>at-least-once processing, where tuples can be processed successfully by multiple batches. </li>
+<li>There’s no way to achieve exactly-once semantics for this kind of spout.</li>
+</ul>
+<h2 id="Summary_of_spout_and_state_types">Summary of spout and state types</h2><p>这个图展示了哪些spout和state的组合能够实现有且只有一次被成功处理的语义：<br><img src="http://storm.apache.org/documentation/images/spout-vs-state.png" alt="一次性语义yes"></p>
+<ul>
+<li>Opaque transactional state有着最为强大的容错性。但是这是以存储更多的信息作为代价的。</li>
+<li>Transactional states 需要存储较少的状态信息，但是仅能和 transactional spouts协同工作. </li>
+<li>non-transactional state所需要存储的信息最少，但是却不能实现有且只有一次被成功处理的语义。</li>
+</ul>
+<blockquote>
+<p><strong>场景寻找 for dream offer</strong><br>State和Spout类型的选择其实是一种在容错性和存储消耗之间的权衡，你的应用的需要会决定那种组合更适合你。</p>
+</blockquote>
+<h2 id="State_APIs">State APIs</h2><p>Trident这样做的好处把所有容错想过的逻辑都放在了State里面。 作为一个用户，你并不需要自己去处理复杂的txid，存储多余的信息到数据库中，或者是任何其他类似的事情。你只需要写如下这样简单的code：<br><figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TridentTopology</span> topology = <span class="keyword">new</span> <span class="type">TridentTopology</span><span class="literal">()</span>;        </span><br><span class="line"><span class="type">TridentState</span> wordCounts =</span><br><span class="line">      topology.newStream(<span class="string">"spout1"</span>, spout)</span><br><span class="line">        .each(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"sentence"</span>), <span class="keyword">new</span> <span class="type">Split</span><span class="literal">()</span>, <span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"word"</span>))</span><br><span class="line">        .groupBy(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"word"</span>))</span><br><span class="line">        .persistentAggregate(<span class="type">MemcachedState</span>.opaque(serverLocations), <span class="keyword">new</span> <span class="type">Count</span><span class="literal">()</span>, <span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"count"</span>))                </span><br><span class="line">        .parallelismHint(<span class="number">6</span>);</span><br></pre></td></tr></table></figure></p>
+<p>All the logic necessary to manage opaque transactional state logic is internalized in the MemcachedState.opaque call. Additionally, updates are automatically batched to minimize roundtrips to the database.</p>
+<p><strong>State </strong>的接口：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">State</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">beginCommit</span><span class="params">(Long txid)</span></span>; <span class="comment">// can be null for things like partitionPersist occurring off a DRPC stream</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(Long txid)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>中间省略许多，编程的时候，看看有没有可以用到的？</code></p>
+<p>Here’s how you would use this operation in a Trident topology:<br><figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TridentTopology</span> topology = <span class="keyword">new</span> <span class="type">TridentTopology</span><span class="literal">()</span>;</span><br><span class="line"><span class="type">TridentState</span> locations = </span><br><span class="line">    topology.newStream(<span class="string">"locations"</span>, locationsSpout)</span><br><span class="line">        .partitionPersist(<span class="keyword">new</span> <span class="type">LocationDBFactory</span><span class="literal">()</span>, <span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"userid"</span>, <span class="string">"location"</span>), <span class="keyword">new</span> <span class="type">LocationUpdater</span><span class="literal">()</span>)</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>The StateUpdater 收取批量的 a batch of tuples ，更新状态</li>
+<li>partitionPersist returns a TridentState object ，use this state in stateQuery operations elsewhere in the topology. 它是DB的最新状态。</li>
+<li>StateUpdaters are given a TridentCollector. 可以<code>emit</code> value。比如你要写入数据库，应该发送到操作DB的Stream中。</li>
+</ul>
+<h2 id="persistentAggregate">persistentAggregate</h2><p>Trident有另外一种更新State的方法叫做persistentAggregate。<br><figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TridentTopology</span> topology = <span class="keyword">new</span> <span class="type">TridentTopology</span><span class="literal">()</span>;        </span><br><span class="line"><span class="type">TridentState</span> wordCounts =</span><br><span class="line">      topology.newStream(<span class="string">"spout1"</span>, spout)</span><br><span class="line">        .each(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"sentence"</span>), <span class="keyword">new</span> <span class="type">Split</span><span class="literal">()</span>, <span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"word"</span>))</span><br><span class="line">        .groupBy(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"word"</span>))</span><br><span class="line">        .persistentAggregate(<span class="keyword">new</span> <span class="type">MemoryMapState</span>.<span class="type">Factory</span><span class="literal">()</span>, <span class="keyword">new</span> <span class="type">Count</span><span class="literal">()</span>, <span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"count"</span>))</span><br></pre></td></tr></table></figure></p>
+<p>persistentAggregate是在partitionPersist之上的另外一层抽象。它知道怎么去使用一个Trident 聚合器来更新State。在这个例子当中，因为这是一个group好的stream，Trident会期待你提供的state是实现了MapState接口的。用来进行group的字段会以key的形式存在于State当中，聚合后的结果会以value的形式存储在State当中。MapState接口看上去如下所示：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">interface</span> <span class="title">MapState</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">State</span> </span>&#123;</span><br><span class="line">    <span class="built_in">List</span>&lt;T&gt; multiGet(<span class="built_in">List</span>&lt;<span class="built_in">List</span>&lt;<span class="built_in">Object</span>&gt;&gt; keys);</span><br><span class="line">    <span class="built_in">List</span>&lt;T&gt; multiUpdate(<span class="built_in">List</span>&lt;<span class="built_in">List</span>&lt;<span class="built_in">Object</span>&gt;&gt; keys, <span class="built_in">List</span>&lt;ValueUpdater&gt; updaters);</span><br><span class="line">    <span class="keyword">void</span> multiPut(<span class="built_in">List</span>&lt;<span class="built_in">List</span>&lt;<span class="built_in">Object</span>&gt;&gt; keys, <span class="built_in">List</span>&lt;T&gt; vals);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当你在一个未经过group的stream上面进行聚合的话，Trident会期待你的state实现Snapshottable接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Snapshottable</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">State</span> </span>&#123;  </span><br><span class="line">    <span class="function">T <span class="title">get</span><span class="params">()</span></span>;  </span><br><span class="line">    <span class="function">T <span class="title">update</span><span class="params">(ValueUpdater updater)</span></span>;  </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(T o)</span></span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><a href="https://github.com/apache/storm/blob/master/storm-core/src/jvm/storm/trident/testing/MemoryMapState.java" target="_blank" rel="external"><strong>MemoryMapState</strong></a> and <a href="https://github.com/nathanmarz/trident-memcached/blob/master/src/jvm/trident/memcached/MemcachedState.java" target="_blank" rel="external"><strong>MemcachedState</strong></a> each implement both of these interfaces.</p>
+</blockquote>
+<h2 id="Implementing_Map_States(Try_Once-看完Spouts再来看一下前后2段)">Implementing Map States(Try Once.看完Spouts再来看一下前后2段)</h2><p>在Trident中实现MapState是非常简单的，它几乎帮你做了所有的事情。OpaqueMap, TransactionalMap, 和 NonTransactionalMap 类实现了所有相关的逻辑，包括容错的逻辑。你只需要将一个IBackingMap 的实现提供给这些类就可以了。<code>IBackingMap</code>接口看上去如下所示：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">interface</span> <span class="title">IBackingMap</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="built_in">List</span>&lt;T&gt; multiGet(<span class="built_in">List</span>&lt;<span class="built_in">List</span>&lt;<span class="built_in">Object</span>&gt;&gt; keys); </span><br><span class="line">    <span class="keyword">void</span> multiPut(<span class="built_in">List</span>&lt;<span class="built_in">List</span>&lt;<span class="built_in">Object</span>&gt;&gt; keys, <span class="built_in">List</span>&lt;T&gt; vals); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>OpaqueMap’s会用<a href="https://github.com/apache/storm/blob/master/storm-core/src/jvm/storm/trident/state/OpaqueValue.java" target="_blank" rel="external">OpaqueValue</a>的value来调用multiPut方法，TransactionalMap’s会提供TransactionalValue中的value，而NonTransactionalMaps只是简单的把从Topology获取的object传递给multiPut。</li>
+<li>Trident还提供了一种<a href="https://github.com/apache/storm/blob/master/storm-core/src/jvm/storm/trident/state/map/CachedMap.java" target="_blank" rel="external">CachedMap</a>类来进行自动的LRU cache。</li>
+<li>另外，Trident 提供了 <a href="https://github.com/apache/storm/blob/master/storm-core/src/jvm/storm/trident/state/map/SnapshottableMap.java" target="_blank" rel="external">SnapshottableMap</a> 类将一个MapState 转换成一个 Snapshottable 对象.</li>
+<li>大家可以看看 <a href="https://github.com/nathanmarz/trident-memcached/blob/master/src/jvm/trident/memcached/MemcachedState.java" target="_blank" rel="external">MemcachedState</a>的实现，从而学习一下怎样将这些工具组合在一起形成一个高性能的MapState实现。MemcachedState是允许大家选择使用opaque transactional, transactional, 还是 non-transactional 语义的。</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/storm/">storm</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/storm/">storm</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.eechodsmy.com/2015/04/24/6 Trident State/" data-title="6 Trident State | Epoch" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/05/04/ACD-See-Pro-6安装/" title="ACD See Pro 6安装">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ACD See Pro 6安装</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/23/5 Trident API Overview/"  title="5 Trident API Overview">
+ <strong>下一篇：</strong><br/> 
+ <span>5 Trident API Overview
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/04/24/6 Trident State/" data-title="6 Trident State" data-url="http://www.eechodsmy.com/2015/04/24/6 Trident State/"></div>
+</section>
+
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Trident_State"><span class="toc-number">1.</span> <span class="toc-text">Trident State</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Transactional_spouts"><span class="toc-number">1.1.</span> <span class="toc-text">Transactional spouts</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#how_you_would_design_a_State_implementation_that_has_exactly-once_semantics_for_transactional_spouts-"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">how you would design a State implementation that has exactly-once semantics for transactional spouts.</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#下面的这个场景例子是很重要的。"><span class="toc-number">1.1.0.2.</span> <span class="toc-text">下面的这个场景例子是很重要的。</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Opaque_transactional_spouts"><span class="toc-number">1.2.</span> <span class="toc-text">Opaque transactional spouts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Non-transactional_spouts"><span class="toc-number">1.3.</span> <span class="toc-text">Non-transactional spouts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary_of_spout_and_state_types"><span class="toc-number">1.4.</span> <span class="toc-text">Summary of spout and state types</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#State_APIs"><span class="toc-number">1.5.</span> <span class="toc-text">State APIs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#persistentAggregate"><span class="toc-number">1.6.</span> <span class="toc-text">persistentAggregate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Implementing_Map_States(Try_Once-看完Spouts再来看一下前后2段)"><span class="toc-number">1.7.</span> <span class="toc-text">Implementing Map States(Try Once.看完Spouts再来看一下前后2段)</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Epoch/" title="Epoch">Epoch<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/life/" title="life">life<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/storm/" title="storm">storm<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/tool/" title="tool">tool<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/storm/" title="storm">storm<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/life/" title="life">life<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/travel/" title="travel">travel<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/reading/" title="reading">reading<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/clothes/" title="clothes">clothes<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/One-Piece/" title="One Piece">One Piece<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/install/" title="install">install<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ECHO/" title="ECHO">ECHO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/摄影/" title="摄影">摄影<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/picture/" title="picture">picture<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shell/" title="shell">shell<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/技巧/" title="技巧">技巧<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.zcool.com.cn/u/13094813" target="_blank" title="EPOCH&#39;s Blog">EPOCH&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="widget tag">
+<p class="asidetitle">博主簡介</p>
+<ul class="entry">
+<li>ECHO</li>
+<li>现状：正在奋斗ing。</li>
+</ul>
+</div> 
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 不善于颠覆旧世界， <br/>
+			也能创造新世界。</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1717383477" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="http://www.eechodsmy.com/about" target="_blank" title="Epoch">Epoch</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ECHO"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'ECHO';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

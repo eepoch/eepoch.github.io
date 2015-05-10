@@ -1,0 +1,652 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>5 Trident API Overview | Epoch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Epoch">
+    
+
+    
+    <meta name="description" content="Trident API OverviewStream是Trident中的核心数据模型.
+
+
+Stream，别名TridentTuple。
+一个stream被划分成很多partition：partition是stream的一个子集，里面可能有多个batch，一个batch也可能位于不同的partition上
+
+
+Trident 有5种操作：
+
+Partition-local operations：对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5 Trident API Overview">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/04/23/5 Trident API Overview/index.html">
+<meta property="og:site_name" content="Epoch">
+<meta property="og:description" content="Trident API OverviewStream是Trident中的核心数据模型.
+
+
+Stream，别名TridentTuple。
+一个stream被划分成很多partition：partition是stream的一个子集，里面可能有多个batch，一个batch也可能位于不同的partition上
+
+
+Trident 有5种操作：
+
+Partition-local operations：对">
+<meta property="og:image" content="http://storm.apache.org/documentation/images/grouping.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="5 Trident API Overview">
+<meta name="twitter:description" content="Trident API OverviewStream是Trident中的核心数据模型.
+
+
+Stream，别名TridentTuple。
+一个stream被划分成很多partition：partition是stream的一个子集，里面可能有多个batch，一个batch也可能位于不同的partition上
+
+
+Trident 有5种操作：
+
+Partition-local operations：对">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.jpg">
+    
+    
+    <link rel="apple-touch-icon" href="/img/favicon.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/favicon.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Epoch">Epoch</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:www.eechodsmy.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/23/5 Trident API Overview/" title="5 Trident API Overview" itemprop="url">5 Trident API Overview</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="http://www.eechodsmy.com/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
+		
+  <p class="article-time">
+    <time datetime="2015-04-23T05:54:42.000Z" itemprop="datePublished"> 发表于 2015-04-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Trident_API_Overview"><span class="toc-number">1.</span> <span class="toc-text">Trident API Overview</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Partition-local_operations"><span class="toc-number">1.1.</span> <span class="toc-text">Partition-local operations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Functions"><span class="toc-number">1.1.1.</span> <span class="toc-text">Functions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filters"><span class="toc-number">1.1.2.</span> <span class="toc-text">Filters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#partitionAggregate"><span class="toc-number">1.1.3.</span> <span class="toc-text">partitionAggregate</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CombinerAggregator"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">CombinerAggregator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ReducerAggregator"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">ReducerAggregator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregator"><span class="toc-number">1.1.3.3.</span> <span class="toc-text">Aggregator</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stateQuery_and_partitionPersist"><span class="toc-number">1.1.4.</span> <span class="toc-text">stateQuery and partitionPersist</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#projection"><span class="toc-number">1.1.5.</span> <span class="toc-text">projection</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Repartitioning_operations"><span class="toc-number">1.2.</span> <span class="toc-text">Repartitioning operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Aggregation_operations"><span class="toc-number">1.3.</span> <span class="toc-text">Aggregation operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Operations_on_grouped_streams"><span class="toc-number">1.4.</span> <span class="toc-text">Operations on grouped streams</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Merges_and_joins"><span class="toc-number">1.5.</span> <span class="toc-text">Merges and joins</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一种方法"><span class="toc-number">1.5.1.</span> <span class="toc-text">第一种方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二种方法"><span class="toc-number">1.5.2.</span> <span class="toc-text">第二种方法</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="Trident_API_Overview">Trident API Overview</h1><p><strong><code>Stream</code></strong>是Trident中的核心数据模型.</p>
+<blockquote>
+<ul>
+<li><strong>Stream</strong>，别名<strong>TridentTuple</strong>。</li>
+<li>一个stream被划分成很多partition：partition是stream的一个子集，里面可能有多个batch，一个batch也可能位于不同的partition上</li>
+</ul>
+</blockquote>
+<p><strong>Trident</strong> 有5种操作：</p>
+<ul>
+<li>Partition-local operations：对每个partition的局部操作，不产生网络传输</li>
+<li>Repartitioning operations：对数据流的重新划分（不改变内容），产生网络传输</li>
+<li>Aggregation operations： that do network transfer as part of the operation</li>
+<li>Operations on grouped streams：作用在分组流上的操作</li>
+<li>Merges and joins</li>
+</ul>
+<h2 id="Partition-local_operations">Partition-local operations</h2><p>对每个partition的局部操作包括：function、filter、partitionAggregate、stateQuery、partitionPersist、project等。</p>
+<h3 id="Functions">Functions</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyFunction</span> <span class="keyword">extends</span> <span class="title">BaseFunction</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(TridentTuple tuple, TridentCollector collector)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; tuple.getInteger(<span class="number">0</span>); i++) &#123;</span><br><span class="line">            collector.emit(<span class="keyword">new</span> Values(i));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Now suppose you have a stream in the variable “mystream” with the fields [“a”, “b”, “c”] with the following tuples:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">[<span class="number">4</span>, <span class="number">1</span>, <span class="number">6</span>]</span><br><span class="line">[<span class="number">3</span>, <span class="number">0</span>, <span class="number">8</span>]</span><br></pre></td></tr></table></figure></p>
+<p>If you run this code:<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mystream.<span class="function"><span class="title">each</span><span class="params">(new Fields(<span class="string">"b"</span>)</span></span>, new <span class="function"><span class="title">MyFunction</span><span class="params">()</span></span>, new <span class="function"><span class="title">Fields</span><span class="params">(<span class="string">"d"</span>)</span></span>))</span><br></pre></td></tr></table></figure></p>
+<p>The resulting tuples would have fields [“a”, “b”, “c”, “d”] and look like this:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">4</span>, <span class="number">1</span>, <span class="number">6</span>, <span class="number">0</span>]</span><br></pre></td></tr></table></figure></p>
+<h3 id="Filters">Filters</h3><p>fileter收到一个输入tuple后可以决定是否留着这个tuple，看下面的filter：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">MyFilter</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">BaseFilter</span> &#123;</span></span><br><span class="line">    public boolean isKeep(<span class="type">TridentTuple</span> tuple) &#123;</span><br><span class="line">        <span class="keyword">return</span> tuple.getInteger(<span class="number">0</span>) == <span class="number">1</span> &amp;&amp; tuple.getInteger(<span class="number">1</span>) == <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Now suppose you had these tuples with fields [“a”, “b”, “c”]:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">[<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</span><br></pre></td></tr></table></figure></p>
+<p>If you ran this code:<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mystream.<span class="function"><span class="title">each</span><span class="params">(new Fields(<span class="string">"b"</span>, <span class="string">"a"</span>)</span></span>, new <span class="function"><span class="title">MyFilter</span><span class="params">()</span></span>)</span><br></pre></td></tr></table></figure></p>
+<p>The resulting tuples would be:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure></p>
+<h3 id="partitionAggregate">partitionAggregate</h3><p>partitionAggregate对每个partition执行一个function操作（实际上是聚合操作），但它又不同于上面的functions操作，partitionAggregate的<code>输出tuple将会取代收到的输入tuple</code>.<br>Consider this example:<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mystream.<span class="function"><span class="title">partitionAggregate</span><span class="params">(new Fields(<span class="string">"b"</span>)</span></span>, new <span class="function"><span class="title">Sum</span><span class="params">()</span></span>, new <span class="function"><span class="title">Fields</span><span class="params">(<span class="string">"sum"</span>)</span></span>)</span><br></pre></td></tr></table></figure></p>
+<p> the input stream contained fields [“a”, “b”] and the following partitions of tuples:<br><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="name">Partition</span> <span class="number">0</span>:</span><br><span class="line">[<span class="string">"a"</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="string">"b"</span>, <span class="number">2</span>]</span><br><span class="line"></span><br><span class="line"><span class="name">Partition</span> <span class="number">1</span>:</span><br><span class="line">[<span class="string">"a"</span>, <span class="number">3</span>]</span><br><span class="line">[<span class="string">"c"</span>, <span class="number">8</span>]</span><br><span class="line"></span><br><span class="line"><span class="name">Partition</span> <span class="number">2</span>:</span><br><span class="line">[<span class="string">"e"</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="string">"d"</span>, <span class="number">9</span>]</span><br><span class="line">[<span class="string">"d"</span>, <span class="number">10</span>]</span><br></pre></td></tr></table></figure></p>
+<p>output stream, contain these tuples with one field called “sum”:<br><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Partition</span> 0:<span class="sqbracket"></span><br><span class="line">[3]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Partition</span> 1:<span class="sqbracket"></span><br><span class="line">[11]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Partition</span> 2:<span class="sqbracket"></span><br><span class="line">[20]</span></span><br></pre></td></tr></table></figure></p>
+<p>代码中的<code>new Sum()</code>实际上是一个<strong>聚合器(aggregator)</strong>，定义一个聚合器有三种不同的接口：<code>CombinerAggregator</code>、<code>ReducerAggregator</code> 、<code>Aggregator</code>。</p>
+<h4 id="CombinerAggregator">CombinerAggregator</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CombinerAggregator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="function">T <span class="title">init</span><span class="params">(TridentTuple tuple)</span></span>;</span><br><span class="line">    <span class="function">T <span class="title">combine</span><span class="params">(T val1, T val2)</span></span>;</span><br><span class="line">    <span class="function">T <span class="title">zero</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是接口的一个实现：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="keyword">Count</span> <span class="keyword">implements</span> CombinerAggregator&lt;<span class="keyword">Long</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">Long</span> init(TridentTuple tuple) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>L;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">Long</span> combine(<span class="keyword">Long</span> val1, <span class="keyword">Long</span> val2) &#123;</span><br><span class="line">        <span class="keyword">return</span> val1 + val2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">Long</span> zero() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>L;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<ul>
+<li>A <code>CombinerAggregator</code> returns a single tuple with a single field as output.<br><code>CombinerAggregators</code> run the<code>init function</code>on each input tuple and use the <code>combine function</code> to combine values until there’s only <strong>one value</strong> left.</li>
+<li>当使用aggregate()方法代替partitionAggregate()方法时，就能看到CombinerAggregation带来的好处。这种情况下，Trident会自动优化计算：先做局部聚合操作，然后再通过网络传输tuple进行全局聚合。</li>
+</ul>
+</blockquote>
+<h4 id="ReducerAggregator">ReducerAggregator</h4><p>A <strong>ReducerAggregator</strong> has the following interface:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ReducerAggregator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="function">T <span class="title">init</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">T <span class="title">reduce</span><span class="params">(T curr, TridentTuple tuple)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>ReducerAggregator</strong>使用<code>init()</code>方法产生一个初始值，对于每个输入tuple，依次迭代这个初始值，最终产生一个单值输出tuple。下面示例了如何将Count定义为ReducerAggregator：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="keyword">Count</span> <span class="keyword">implements</span> ReducerAggregator&lt;<span class="keyword">Long</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">Long</span> init() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>L;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">Long</span> reduce(<span class="keyword">Long</span> curr, TridentTuple tuple) &#123;</span><br><span class="line">        <span class="keyword">return</span> curr + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong>ReducerAggregator</strong> can also be used with <strong>persistentAggregate</strong>.</p>
+</blockquote>
+<h4 id="Aggregator">Aggregator</h4><p>最通用的聚合接口是 <strong>Aggregator</strong>，如下<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Aggregator<span class="variable">&lt;T&gt;</span> extends Operation &#123;</span><br><span class="line">    T init(Object batchId, TridentCollector collector);</span><br><span class="line">    void aggregate(T <span class="keyword">state</span>, TridentTuple tuple, TridentCollector collector);</span><br><span class="line">    void complete(T <span class="keyword">state</span>, TridentCollector collector);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>init method</code> is called before processing the batch. The return value of init is an Object that will represent the state of the aggregation and will be passed into the <code>aggregate and complete methods</code>.</li>
+<li><code>aggregate method</code> is called for each input tuple in the batch partition. This method can update the state and optionally emit tuples.</li>
+<li><code>complete</code> method is called when all tuples for the batch partition have been processed by aggregate.</li>
+</ul>
+<p>下面是对计数的示例的实现<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class CountAgg extends BaseAggregator<span class="variable">&lt;CountState&gt;</span> &#123;</span><br><span class="line">    static class CountState &#123;</span><br><span class="line">        long count = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public CountState init(Object batchId, TridentCollector collector) &#123;</span><br><span class="line">        return new CountState();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void aggregate(CountState <span class="keyword">state</span>, TridentTuple tuple, TridentCollector collector) &#123;</span><br><span class="line">        <span class="keyword">state</span>.count+=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void complete(CountState <span class="keyword">state</span>, TridentCollector collector) &#123;</span><br><span class="line">        collector.emit(new Values(<span class="keyword">state</span>.count));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>有时需要<strong>同时执行</strong>多个聚合操作，这个可以使用链式操作<code>chainedAgg</code>完成：<br>下面的代码会<strong>分别执行</strong><code>Count</code> <code>Sum</code>聚合器，输出结果。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mystream.<span class="function"><span class="title">chainedAgg</span><span class="params">()</span></span></span><br><span class="line">        .<span class="function"><span class="title">partitionAggregate</span><span class="params">(new Count()</span></span>, new <span class="function"><span class="title">Fields</span><span class="params">(<span class="string">"count"</span>)</span></span>)</span><br><span class="line">        .<span class="function"><span class="title">partitionAggregate</span><span class="params">(new Fields(<span class="string">"b"</span>)</span></span>, new <span class="function"><span class="title">Sum</span><span class="params">()</span></span>, new <span class="function"><span class="title">Fields</span><span class="params">(<span class="string">"sum"</span>)</span></span>)</span><br><span class="line">        .<span class="function"><span class="title">chainEnd</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure></p>
+<p>This code will run the <code>Count</code> and <code>Sum</code> aggregators on each partition. The output will contain a single tuple with the fields [“count”, “sum”].（也就是说，对一个partition的数据，分别做了2种<code>Operation</code>，生成了2个输出的字段。）<br>~~ <strong><code>这个多个聚合操作</code></strong>没看懂，主要是输出的字段是什么意思 ~~</p>
+<h3 id="stateQuery_and_partitionPersist">stateQuery and partitionPersist</h3><p><a href="http://storm.apache.org/documentation/Trident-state.html" target="_blank" rel="external">Trident state doc.</a></p>
+<h3 id="projection">projection</h3><p>经Stream中的project方法处理后的tuple仅保持指定字段（相当于过滤字段）。例如，mystream中的字段为 [“a”, “b”, “c”, “d”]，执行下面代码：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mystream.<span class="function"><span class="title">project</span><span class="params">(new Fields(<span class="string">"b"</span>, <span class="string">"d"</span>)</span></span>)</span><br></pre></td></tr></table></figure></p>
+<p>则输出流将仅包含[“b”, “d”]字段。</p>
+<h2 id="Repartitioning_operations">Repartitioning operations</h2><p>Repartition操作可以改变tuple在各个task之上的划分。Repartition也可以改变Partition的数量。Repartition需要网络传输。</p>
+<ol>
+<li>shuffle：随机将tuple均匀地分发到目标partition里。</li>
+<li>broadcast：每个tuple被复制到所有的目标partition里，在DRPC中有用 — 你可以在每个partition上使用stateQuery。</li>
+<li>partitionBy：对每个tuple选择partition的方法是：(该tuple指定字段的hash值) mod (目标partition的个数)，该方法确保指定字段相同的tuple能够被发送到同一个partition。—相当于<code>FieldGrouping</code>方式</li>
+<li>global：所有的tuple都被发送到同一个partition。</li>
+<li>batchGlobal：确保同一个batch中的tuple被发送到相同的partition中。</li>
+<li>patition：该方法接受一个自定义分区的function（实现<code>backtype.storm.grouping.CustomStreamGrouping</code>）</li>
+</ol>
+<h2 id="Aggregation_operations">Aggregation operations</h2><p>2种方式：Trident中有aggregate()和persistentAggregate()方法对流进行聚合操作。</p>
+<ul>
+<li>aggregate()在每个batch上独立的执行</li>
+<li>persistemAggregate() 对所有batch中的所有tuple进行聚合，并将结果存入state源中。</li>
+</ul>
+<p>下面的例子使用aggregate()对一个batch操作得到一个全局的count：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mystream.<span class="function"><span class="title">aggregate</span><span class="params">(new Count()</span></span>, new <span class="function"><span class="title">Fields</span><span class="params">(<span class="string">"count"</span>)</span></span>)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong><code>性能调优的点</code></strong><br>同在partitionAggregate中一样，aggregate中的聚合器也可以使用链式用法。但是，如果你将一个CombinerAggregator链到一个非CombinerAggregator后面，Trident就不能做局部聚合优化。<br>这句话是说在<code>.chainedAgg()</code> 和 <code>.chainEnd()</code>之间，如果有多个聚合器，若他们不全是实现的<code>CombinerAggregator</code>，那么这个东西不能够被优化。<br>关于persistentAggregate的用法请参见<a href="http://storm.apache.org/documentation/Trident-state.html" target="_blank" rel="external">Trident state</a>一文。</p>
+</blockquote>
+<h2 id="Operations_on_grouped_streams">Operations on grouped streams</h2><p>groupBy操作先对流中的指定字段做partitionBy操作，让指定字段相同的tuple能被发送到同一个partition里。然后在每个partition里根据指定字段值对该分区里的tuple进行分组。下面演示了groupBy操作的过程：<br><img src="http://storm.apache.org/documentation/images/grouping.png" alt="groupBY"></p>
+<ul>
+<li>If you run <code>aggregators</code> on a grouped stream, the aggregation will be run within <strong>each group</strong> instead of against  <strong>the whole batch </strong> .</li>
+<li><strong>persistentAggregate</strong> can also be run on a <strong>GroupedStream</strong>, in which case the results will be stored in a <a href="https://github.com/apache/storm/blob/master/storm-core/src/jvm/storm/trident/state/map/MapState.java" target="_blank" rel="external"><code>MapState</code></a> with the key being the grouping fields.</li>
+</ul>
+<h2 id="Merges_and_joins">Merges and joins</h2><p><strong>combining different streams together. </strong></p>
+<h3 id="第一种方法">第一种方法</h3><p>The simplest way to combine streams is to <code>merge</code> them into one stream. You can do that with the <code>TridentTopology#merge</code> method,<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">topology.<span class="built_in">merge</span>(stream1, stream2, stream3);</span><br></pre></td></tr></table></figure></p>
+<p>Trident will name the output fields of the new, merged stream as the <strong>output fields</strong>of the <strong>first stream.</strong></p>
+<h3 id="第二种方法">第二种方法</h3><p>使用<code>join</code>（连接，类似于sql中的连接操作）。下面的在stream1( [“key”, “val1”, “val2”] ) 和 stream2[“x”, “val1”]<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">topology.<span class="keyword">join</span>(stream1, <span class="keyword">new</span> Fields(<span class="string">"key"</span>), stream2, <span class="keyword">new</span> Fields(<span class="string">"x"</span>), <span class="keyword">new</span> Fields(<span class="string">"key"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>));</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>using “key” and “x” as the join fields</li>
+<li>output fields of the new stream be named</li>
+<li>“key” corresponds to “key” from stream1 and “x” from stream2.</li>
+<li>“a” and “b” correspond to “val1” and “val2” from stream1, and “c” corresponds to “val1” from stream2.</li>
+</ul>
+<blockquote>
+<p>思考：</p>
+<ul>
+<li>When a join happens between streams originating from different spouts, those spouts will be synchronized with how they emit batches. That is, a batch of processing will include tuples from each spout.</li>
+<li>how do you do something like a “windowed join”</li>
+<li>为了解决上面的问题， you would make use of <code>partitionPersist</code> and <code>stateQuery.</code> The last hour of tuples from one side of the join would be stored and rotated in a source of state, keyed by the join field. Then the <code>stateQuery</code> would do lookups by the join field to perform the <code>join</code>.</li>
+</ul>
+</blockquote>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/storm/">storm</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/storm/">storm</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.eechodsmy.com/2015/04/23/5 Trident API Overview/" data-title="5 Trident API Overview | Epoch" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/04/24/6 Trident State/" title="6 Trident State">
+  <strong>上一篇：</strong><br/>
+  <span>
+  6 Trident State</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/22/4 Trident Tutorial/"  title="4 Trident Tutorial">
+ <strong>下一篇：</strong><br/> 
+ <span>4 Trident Tutorial
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/04/23/5 Trident API Overview/" data-title="5 Trident API Overview" data-url="http://www.eechodsmy.com/2015/04/23/5 Trident API Overview/"></div>
+</section>
+
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Trident_API_Overview"><span class="toc-number">1.</span> <span class="toc-text">Trident API Overview</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Partition-local_operations"><span class="toc-number">1.1.</span> <span class="toc-text">Partition-local operations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Functions"><span class="toc-number">1.1.1.</span> <span class="toc-text">Functions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filters"><span class="toc-number">1.1.2.</span> <span class="toc-text">Filters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#partitionAggregate"><span class="toc-number">1.1.3.</span> <span class="toc-text">partitionAggregate</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CombinerAggregator"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">CombinerAggregator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ReducerAggregator"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">ReducerAggregator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregator"><span class="toc-number">1.1.3.3.</span> <span class="toc-text">Aggregator</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stateQuery_and_partitionPersist"><span class="toc-number">1.1.4.</span> <span class="toc-text">stateQuery and partitionPersist</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#projection"><span class="toc-number">1.1.5.</span> <span class="toc-text">projection</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Repartitioning_operations"><span class="toc-number">1.2.</span> <span class="toc-text">Repartitioning operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Aggregation_operations"><span class="toc-number">1.3.</span> <span class="toc-text">Aggregation operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Operations_on_grouped_streams"><span class="toc-number">1.4.</span> <span class="toc-text">Operations on grouped streams</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Merges_and_joins"><span class="toc-number">1.5.</span> <span class="toc-text">Merges and joins</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一种方法"><span class="toc-number">1.5.1.</span> <span class="toc-text">第一种方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二种方法"><span class="toc-number">1.5.2.</span> <span class="toc-text">第二种方法</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Epoch/" title="Epoch">Epoch<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/life/" title="life">life<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/storm/" title="storm">storm<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/tool/" title="tool">tool<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/storm/" title="storm">storm<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/life/" title="life">life<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/travel/" title="travel">travel<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/reading/" title="reading">reading<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/clothes/" title="clothes">clothes<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/One-Piece/" title="One Piece">One Piece<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/install/" title="install">install<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ECHO/" title="ECHO">ECHO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/摄影/" title="摄影">摄影<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/picture/" title="picture">picture<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shell/" title="shell">shell<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/技巧/" title="技巧">技巧<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.zcool.com.cn/u/13094813" target="_blank" title="EPOCH&#39;s Blog">EPOCH&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="widget tag">
+<p class="asidetitle">博主簡介</p>
+<ul class="entry">
+<li>ECHO</li>
+<li>现状：正在奋斗ing。</li>
+</ul>
+</div> 
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 不善于颠覆旧世界， <br/>
+			也能创造新世界。</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1717383477" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="http://www.eechodsmy.com/about" target="_blank" title="Epoch">Epoch</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ECHO"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'ECHO';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

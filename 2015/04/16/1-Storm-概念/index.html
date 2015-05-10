@@ -1,0 +1,676 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title> 1 Storm 概念 | Epoch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Epoch">
+    
+
+    
+    <meta name="description" content="Storm概念
+Topologies
+Streams
+Spouts
+Bolts
+Stream groupings
+Reliability
+Tasks
+Workers
+
+Topologies一个实时应用的计算任务被打包作为Topology发布，这同Hadoop的MapReduce任务相似｡Resources:
+
+TopologyBuilder 用这个可以构建Topo
+Running topologi">
+<meta property="og:type" content="article">
+<meta property="og:title" content=" 1 Storm 概念">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/04/16/1-Storm-概念/index.html">
+<meta property="og:site_name" content="Epoch">
+<meta property="og:description" content="Storm概念
+Topologies
+Streams
+Spouts
+Bolts
+Stream groupings
+Reliability
+Tasks
+Workers
+
+Topologies一个实时应用的计算任务被打包作为Topology发布，这同Hadoop的MapReduce任务相似｡Resources:
+
+TopologyBuilder 用这个可以构建Topo
+Running topologi">
+<meta property="og:image" content="http://7ximfr.com1.z0.glb.clouddn.com/topo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content=" 1 Storm 概念">
+<meta name="twitter:description" content="Storm概念
+Topologies
+Streams
+Spouts
+Bolts
+Stream groupings
+Reliability
+Tasks
+Workers
+
+Topologies一个实时应用的计算任务被打包作为Topology发布，这同Hadoop的MapReduce任务相似｡Resources:
+
+TopologyBuilder 用这个可以构建Topo
+Running topologi">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.jpg">
+    
+    
+    <link rel="apple-touch-icon" href="/img/favicon.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/favicon.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Epoch">Epoch</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:www.eechodsmy.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/04/16/1-Storm-概念/" title=" 1 Storm 概念" itemprop="url"> 1 Storm 概念</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="http://www.eechodsmy.com/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
+		
+  <p class="article-time">
+    <time datetime="2015-04-16T14:57:16.000Z" itemprop="datePublished"> 发表于 2015-04-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm概念"><span class="toc-number">1.</span> <span class="toc-text">Storm概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Topologies"><span class="toc-number">1.1.</span> <span class="toc-text">Topologies</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream"><span class="toc-number">1.2.</span> <span class="toc-text">Stream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spouts"><span class="toc-number">1.3.</span> <span class="toc-text">Spouts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bolts"><span class="toc-number">1.4.</span> <span class="toc-text">Bolts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream_groupings"><span class="toc-number">1.5.</span> <span class="toc-text">Stream groupings</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reliability"><span class="toc-number">1.6.</span> <span class="toc-text">Reliability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tasks"><span class="toc-number">1.7.</span> <span class="toc-text">Tasks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Workers"><span class="toc-number">1.8.</span> <span class="toc-text">Workers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#细节"><span class="toc-number">1.9.</span> <span class="toc-text">细节</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高级配置"><span class="toc-number">1.10.</span> <span class="toc-text">高级配置</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="Storm概念">Storm概念</h1><ol>
+<li>Topologies</li>
+<li>Streams</li>
+<li>Spouts</li>
+<li>Bolts</li>
+<li>Stream groupings</li>
+<li>Reliability</li>
+<li>Tasks</li>
+<li>Workers</li>
+</ol>
+<h2 id="Topologies">Topologies</h2><p>一个实时应用的计算任务被打包作为Topology发布，这同Hadoop的MapReduce任务相似｡<br><img src="http://7ximfr.com1.z0.glb.clouddn.com/topo.png" alt="topology"><br><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/TopologyBuilder.html" target="_blank" rel="external"><strong>TopologyBuilder</strong></a> 用这个可以构建Topo</li>
+<li><a href="https://storm.apache.org/documentation/Running-topologies-on-a-production-cluster.html" target="_blank" rel="external"><strong>Running topologies on a production cluster</strong></a></li>
+<li><a href="https://storm.apache.org/documentation/Local-mode.html" target="_blank" rel="external"><strong>Local mode</strong></a>: 用 local mode发布Topo</li>
+</ul>
+<h2 id="Stream">Stream</h2><p>数据流(Stream)是Storm中对数据进行的抽象，它是时间上无界的tuple元组序列。<br>Tuples can contain integers, longs, shorts, bytes, strings, doubles, floats, booleans, and byte arrays and 自定义的序列化的对象。</p>
+<p><strong>Resources:</strong><br><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/tuple/Tuple.html" target="_blank" rel="external"><strong>Tuple </strong></a>: Tuple组成Stream<br><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/OutputFieldsDeclarer.html" target="_blank" rel="external"><strong>OutputFieldsDeclarer</strong></a>: 用来声明 streamsId, fields and schemas<br><a href="https://storm.apache.org/documentation/Serialization.html" target="_blank" rel="external"><strong>Serialization</strong></a>: 理解 <code>dynamic typing</code> of tuples ，可以自定义serializations (Storm 用<code>Kryo</code> 来 serialization，storm底层框架采用。<code>Kryo</code> is Fast, efficient Java serialization and cloning).<br><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/serialization/ISerialization.html" target="_blank" rel="external"><strong>ISerialization</strong></a>: 实现这个接口，可以自定义serializers。<br><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/Config.html#TOPOLOGY_SERIALIZATIONS" target="_blank" rel="external"><strong>CONFIG.TOPOLOGY_SERIALIZATIONS</strong></a>: 可以配置 custom serializers</p>
+<h2 id="Spouts">Spouts</h2><p>消息源spout是Storm里面一个topology里面的消息生产者｡</p>
+<ul>
+<li><strong>reliable</strong> 和<strong>unreliable</strong>: 可靠的spouts有 <code>ack</code> 和 <code>fail</code> 方法</li>
+<li>可以发送多个stream: 配合使用<code>declareStream</code> method of <a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/OutputFieldsDeclarer.html" target="_blank" rel="external"><code>OutputFieldsDeclarer</code></a> 和 the stream to <code>emit</code> on<a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/spout/SpoutOutputCollector.html" target="_blank" rel="external"><code>SpoutOutputCollector</code></a>.</li>
+<li><code>nextTuple</code>: either emits a new tuple into the topology or simply returns if there are no new tuples to emit. 这说明，这个方法不会在阻塞，性能有保证。</li>
+</ul>
+<p><strong>Resources:</strong></p>
+<ul>
+<li>IRichSpout: 任何一个spouts都要实现的接口。</li>
+<li><a href="https://storm.apache.org/documentation/Guaranteeing-message-processing.html" target="_blank" rel="external">Guaranteeing message processing</a></li>
+</ul>
+<h2 id="Bolts">Bolts</h2><p>所有的消息处理逻辑被封装在bolts里面｡Bolts可以做很多事情:过滤,聚合,查询数据库等等｡</p>
+<ul>
+<li>可以发送多个stream : 配合使用using the <code>declareStream</code> method of <a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/OutputFieldsDeclarer.html" target="_blank" rel="external"><code>OutputFieldsDeclarer</code></a> 和确定 stream to <code>emit</code> method on <a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/task/OutputCollector.html" target="_blank" rel="external"><code>OutputCollector</code></a>.</li>
+<li><code>execute</code>方法中必须 call the <code>ack</code> method on the <code>OutputCollector</code></li>
+<li>实现<code>IBasicBolt</code> interface 自动ack. 因为它的<code>ack</code>被storm集群所管理了，虽然在接口中看不出来。</li>
+<li>在<code>bolts</code>中new新的threads是十分ok，这些线程将会被asynchronously执行。<code>OutputCollector</code> is <strong>thread-safe</strong> and can be called at any time.</li>
+</ul>
+<p><strong>Resources</strong>:</p>
+<ul>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/IRichBolt.html" target="_blank" rel="external"><code>IRichBolt</code></a>: 很普通的bolt接口.</li>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/IBasicBolt.html" target="_blank" rel="external"><code>IBasicBolt</code></a>:  do filtering or simple -functions 比较方便</li>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/task/OutputCollector.html" target="_blank" rel="external"><code>OutputCollector</code></a>: class for <code>emit</code> and <code>ack</code></li>
+<li><a href="https://storm.apache.org/documentation/Guaranteeing-message-processing.html" target="_blank" rel="external"><code>Guaranteeing message processing</code></a></li>
+</ul>
+<h2 id="Stream_groupings">Stream groupings</h2><p>defines how that stream should be partitioned among the bolt’s tasks.<br>定义了bolts之间数据的分发。(最常用的是前4个)</p>
+<ol>
+<li><strong>Shuffle Grouping</strong> : 随机派发stream里面的tuple,保证每个bolt接收到的tuple数目大致相同｡</li>
+<li><strong>Fields Grouping</strong> : 按字段分组, 比如按userid来分组, 具有同样userid的tuple会被分到相同的Bolts里的一个task｡</li>
+<li><strong>Partial Key grouping</strong> : 和<strong>Fields Grouping</strong>类似，多了load balance，解决data skew。</li>
+</ol>
+<ul>
+<li><a href="https://melmeric.files.wordpress.com/2014/11/the-power-of-both-choices-practical-load-balancing-for-distributed-stream-processing-engines.pdf" target="_blank" rel="external">paper解释</a> </li>
+<li><a href="https://github.com/gdfm/partial-key-grouping" target="_blank" rel="external">yahoo实现</a> : 代码很短，可以看看。</li>
+</ul>
+<ol>
+<li><strong>All Grouping</strong> :广播发送,对于每一个tuple,所有的bolts的task都会收到｡</li>
+<li><strong>Global Grouping</strong> :全局分组, tuple被分配到storm中的一个bolt的id值最低的那个task｡</li>
+<li><strong>Non Grouping</strong> :不分组, 和Shuffle grouping是一样｡</li>
+<li><strong>Direct Grouping</strong>: 直接分组, 这是一种比较特别的分组方法,用这种分组意味着消息的发送者指定由消息接收者的哪个task处理这个消息｡ </li>
+</ol>
+<blockquote>
+<p>Resources:</p>
+<ul>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/TopologyBuilder.html" target="_blank" rel="external"><strong>TopologyBuilder</strong></a>: 构建Topo</li>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/topology/InputDeclarer.html" target="_blank" rel="external"><strong>Input</strong></a> ;<code>setBolt</code> is called on <code>TopologyBuilder</code>的返回对象，可以无限制的订阅数据流，代码中通常都不会出现，隐式的在其中。</li>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/task/CoordinatedBolt.html" target="_blank" rel="external"><strong>CoordinatedBolt</strong></a> : this bolt is useful for <strong>distributed RPC</strong> topologies and makes heavy use of <strong>direct streams and direct groupings</strong></li>
+</ul>
+</blockquote>
+<h2 id="Reliability">Reliability</h2><p>Storm会追踪由每个spout tuple所产生的tuple树。</p>
+<ul>
+<li>每个topology都有一个消息超时的设置 ，默认是30s</li>
+<li>具体看 <strong>Guaranteeing message processing</strong></li>
+</ul>
+<h2 id="Tasks">Tasks</h2><ul>
+<li>一个<code>Task</code>对应一个执行的<code>Thread</code>。</li>
+<li>设置 parallelism 来设置Task ，in the <code>setSpout</code> and <code>setBolt</code> methods of <strong><code>TopologyBuilder</code></strong>.</li>
+</ul>
+<h2 id="Workers">Workers</h2><p>Each worker process is a <strong>physical JVM</strong> and executes a subset of all the tasks for the topology. </p>
+<ul>
+<li><a href="https://storm.apache.org/javadoc/apidocs/backtype/storm/Config.html#TOPOLOGY_WORKERS" target="_blank" rel="external"><strong>Config.TOPOLOGY_WORKERS</strong></a> : 设计worker的数量，在Topology的主函数里面。</li>
+</ul>
+<h2 id="细节">细节</h2><p><strong>1. understanding why Storm’s tuples are dynamically typed？</strong></p>
+<ul>
+<li>static typing to tuple fields会增加  Storm’s API 的复杂度.</li>
+<li>Dynamic typing 更容易使用.</li>
+<li>从设计上看，bolt接受到一条tuple，它可能是任何类型，所以不能够使用静态类型。</li>
+<li>支持动态类型语言 Clojure 和JRuby</li>
+</ul>
+<p><strong>2. 如何使用<code>Kryo</code>序列化，实现什么样的接口</strong></p>
+<ul>
+<li>实现KryoSerializable接口</li>
+</ul>
+<h2 id="高级配置">高级配置</h2><p><strong><code>Config.TOPOLOGY_SKIP_MISSING_KRYO_REGISTRATIONS</code></strong>: </p>
+<ul>
+<li>true, Storm will ignore any <code>serializations</code> that are registered but do not have their code available on the classpath. </li>
+<li>Otherwise, Storm will throw errors when it can’t find a serialization. <blockquote>
+<p>This is useful if you run many topologies on a cluster that each have different serializations, but you want to declare all the serializations across all topologies in the <code>storm.yaml</code> files. (<em>这个配置太小众了，暂时用不到</em>)</p>
+</blockquote>
+</li>
+</ul>
+<p><strong><code>Config.TOPOLOGY_FALL_BACK_ON_JAVA_SERIALIZATION</code></strong>:</p>
+<ul>
+<li>false, 关闭<code>Java serialization</code> 的行为，强制使用自定义的<code>serializations</code></li>
+<li>默认是true. <blockquote>
+<p><strong>性能调优</strong> : <strong>Java serialization</strong>代价很高, CPU花费和序列化后的对象都很大。在storm里面如果遇到一个type，没有一个<code>seserializations</code> 可以序列化它，就用<strong>Java serialization</strong>来序列化（实现了 <code>java.io.Serializable</code> 的class就用<strong>Java serialization</strong>的来序列化。）推荐使用 Storm 自己使用的 <code>Kryo&#39;s FieldsSerializer</code> 来序列化。</p>
+</blockquote>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/storm/">storm</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/storm/">storm</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.eechodsmy.com/2015/04/16/1-Storm-概念/" data-title=" 1 Storm 概念 | Epoch" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/04/17/2 Guaranteeing Message Processing/" title="2 Guaranteeing Message Processing">
+  <strong>上一篇：</strong><br/>
+  <span>
+  2 Guaranteeing Message Processing</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/04/16/深入Storm学习/"  title="深入Storm学习">
+ <strong>下一篇：</strong><br/> 
+ <span>深入Storm学习
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/04/16/1-Storm-概念/" data-title=" 1 Storm 概念" data-url="http://www.eechodsmy.com/2015/04/16/1-Storm-概念/"></div>
+</section>
+
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm概念"><span class="toc-number">1.</span> <span class="toc-text">Storm概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Topologies"><span class="toc-number">1.1.</span> <span class="toc-text">Topologies</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream"><span class="toc-number">1.2.</span> <span class="toc-text">Stream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spouts"><span class="toc-number">1.3.</span> <span class="toc-text">Spouts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bolts"><span class="toc-number">1.4.</span> <span class="toc-text">Bolts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream_groupings"><span class="toc-number">1.5.</span> <span class="toc-text">Stream groupings</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reliability"><span class="toc-number">1.6.</span> <span class="toc-text">Reliability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tasks"><span class="toc-number">1.7.</span> <span class="toc-text">Tasks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Workers"><span class="toc-number">1.8.</span> <span class="toc-text">Workers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#细节"><span class="toc-number">1.9.</span> <span class="toc-text">细节</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高级配置"><span class="toc-number">1.10.</span> <span class="toc-text">高级配置</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Epoch/" title="Epoch">Epoch<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/life/" title="life">life<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/storm/" title="storm">storm<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/tool/" title="tool">tool<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/storm/" title="storm">storm<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/life/" title="life">life<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/travel/" title="travel">travel<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/reading/" title="reading">reading<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/clothes/" title="clothes">clothes<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/One-Piece/" title="One Piece">One Piece<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/install/" title="install">install<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ECHO/" title="ECHO">ECHO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/摄影/" title="摄影">摄影<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/picture/" title="picture">picture<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shell/" title="shell">shell<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/技巧/" title="技巧">技巧<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.zcool.com.cn/u/13094813" target="_blank" title="EPOCH&#39;s Blog">EPOCH&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="widget tag">
+<p class="asidetitle">博主簡介</p>
+<ul class="entry">
+<li>ECHO</li>
+<li>现状：正在奋斗ing。</li>
+</ul>
+</div> 
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 不善于颠覆旧世界， <br/>
+			也能创造新世界。</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1717383477" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="http://www.eechodsmy.com/about" target="_blank" title="Epoch">Epoch</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ECHO"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'ECHO';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
