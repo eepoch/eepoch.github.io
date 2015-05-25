@@ -4,40 +4,28 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>乖 摸摸头 | Epoch</title>
+    <title>storm的定时任务 | Epoch</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Epoch">
     
 
     
-    <meta name="description" content="杂草敏、老兵火塘、小松狮和那姑娘、大鹏、妮可的客栈、阿明、兜兜和大树、毛毛和木头、椰子菇凉 月月 可笑妹妹、纳木错的记忆 、豆儿和成子的因果、昌宝师弟 
+    <meta name="description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
 
-不要那么孤独，你要相信，这个世界上真的有人在过着你想要的生活。
-
-这个世界病的不轻，失眠的人们听歌去吧，在温吞水一样的日志里咂一口狂药，或许唤醒的不仅仅是麻木的味蕾。
-
-我总觉得，年轻人而言，没有比认认真真的去“犯错”更酷更有意义的事情了。">
+由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="乖 摸摸头">
-<meta property="og:url" content="http://www.eechodsmy.com/2015/04/20/乖-摸摸头/index.html">
+<meta property="og:title" content="storm的定时任务">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/index.html">
 <meta property="og:site_name" content="Epoch">
-<meta property="og:description" content="杂草敏、老兵火塘、小松狮和那姑娘、大鹏、妮可的客栈、阿明、兜兜和大树、毛毛和木头、椰子菇凉 月月 可笑妹妹、纳木错的记忆 、豆儿和成子的因果、昌宝师弟 
+<meta property="og:description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
 
-不要那么孤独，你要相信，这个世界上真的有人在过着你想要的生活。
-
-这个世界病的不轻，失眠的人们听歌去吧，在温吞水一样的日志里咂一口狂药，或许唤醒的不仅仅是麻木的味蕾。
-
-我总觉得，年轻人而言，没有比认认真真的去“犯错”更酷更有意义的事情了。">
+由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="乖 摸摸头">
-<meta name="twitter:description" content="杂草敏、老兵火塘、小松狮和那姑娘、大鹏、妮可的客栈、阿明、兜兜和大树、毛毛和木头、椰子菇凉 月月 可笑妹妹、纳木错的记忆 、豆儿和成子的因果、昌宝师弟 
+<meta name="twitter:title" content="storm的定时任务">
+<meta name="twitter:description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
 
-不要那么孤独，你要相信，这个世界上真的有人在过着你想要的生活。
-
-这个世界病的不轻，失眠的人们听歌去吧，在温吞水一样的日志里咂一口狂药，或许唤醒的不仅仅是麻木的味蕾。
-
-我总觉得，年轻人而言，没有比认认真真的去“犯错”更酷更有意义的事情了。">
+由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
 
     
     <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
@@ -93,14 +81,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/04/20/乖-摸摸头/" title="乖 摸摸头" itemprop="url">乖 摸摸头</a>
+      <a href="/2015/05/13/7 storm的定时任务/" title="storm的定时任务" itemprop="url">storm的定时任务</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
 		
   <p class="article-time">
-    <time datetime="2015-04-20T02:48:06.000Z" itemprop="datePublished"> 发表于 2015-04-20</time>
+    <time datetime="2015-05-13T11:23:19.000Z" itemprop="datePublished"> 发表于 2015-05-13</time>
     
   </p>
 </header>
@@ -109,92 +97,29 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm中的定时"><span class="toc-number">1.</span> <span class="toc-text">Storm中的定时</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#isTickTuple_定时触发"><span class="toc-number">1.1.</span> <span class="toc-text">isTickTuple 定时触发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计时器线程timer_(backtype-storm-timer)"><span class="toc-number">1.2.</span> <span class="toc-text">计时器线程timer (backtype.storm.timer)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.2.1.</span> <span class="toc-text">原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java_Timer的使用"><span class="toc-number">1.3.</span> <span class="toc-text">Java Timer的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven的第三方包管理"><span class="toc-number">1.4.</span> <span class="toc-text">Maven的第三方包管理</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p><strong>杂草敏、老兵火塘、小松狮和那姑娘、大鹏、妮可的客栈、阿明、兜兜和大树、毛毛和木头、椰子菇凉 月月 可笑妹妹、纳木错的记忆 、豆儿和成子的因果、昌宝师弟 </strong></p>
+		<h1 id="Storm中的定时">Storm中的定时</h1><h2 id="isTickTuple_定时触发">isTickTuple 定时触发</h2><p>因为其使用Storm的TickTuple特性，定时发送心跳。<br>这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用<br>“<strong>system” component会定时往task发送 “</strong>tick” stream的tuple<br>发送频率</p>
 <ul>
-<li><p>不要那么孤独，你要相信，这个世界上真的有人在过着你想要的生活。</p>
+<li>由<strong>TOPOLOGY_TICK_TUPLE_FREQ_SECS</strong>来配置, 可以在default.ymal里面配置 。</li>
+<li>也可以在代码里面通过getComponentConfiguration()来进行配置,<br>下面这段代码是写在<code>Bolt</code>里面的，这是一个<code>@override</code><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; getComponentConfiguration() &#123;</span><br><span class="line">     <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; conf = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt;();</span><br><span class="line">     conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, emitFrequencyInSeconds);</span><br><span class="line">     <span class="keyword">return</span> conf;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>这个世界病的不轻，失眠的人们听歌去吧，在温吞水一样的日志里咂一口狂药，或许唤醒的不仅仅是麻木的味蕾。</p>
-</li>
-<li><p>我总觉得，年轻人而言，没有比认认真真的去“犯错”更酷更有意义的事情了。</p>
-</li>
-<li><p>善良是一种天赋，善意是一种选择。</p>
-</li>
-<li><p>这个世界上的大部分传奇，不过是普普通通的人们将心意化作了行动而已。你想不想用普通人的方式活成一个传奇？</p>
-</li>
-<li><p>学校教育教了他很多，却从没教会他面对那些不公平的资源配置时，该如何去调整心态。</p>
-</li>
-<li><p>时间无情第一，它才不在乎你是否还是一个孩子，你只要稍一耽误，它立马帮你决定故事的结局。</p>
-</li>
-<li><p>情义这东西，一见如故容易，难的是来日方长的陪伴。</p>
-</li>
-<li><p>听夏曾说： 普通朋友难当。今天你说了什么做了什么符合他的观念，或者对他有利，他就喜欢你，觉得你好。明天你不符合他的观念了，或者做了什么影响他的事情，他就不喜欢你了，觉得你坏。。。世事大多如此，人们只是挨着自己的幻觉，并四处投射、破灭、又收回。</p>
-</li>
-<li><p>惜缘即可，不必攀缘。</p>
-</li>
-<li><p>没有什么过不去，只是再也回不去。</p>
-</li>
-<li><p>听说，每个好姑凉都会遇到一只大灰狼，据说只有遇到过后才能拥有免疫力，有免疫力是件好事，可大灰狼留下的阴影呢？</p>
-</li>
-<li><p>微信微博上每天都可以刷出成堆的心灵鸡汤人生感悟，无数人在转发，却不知道有几人能真正做到知行合一。</p>
-</li>
-<li><p>云没有方向地飞，落叶不怕跌地落下。</p>
-</li>
-<li><p>兜兜和大树不会知道，若无他们当年种下的那一点儿因，不会结出当下的果。有些时候，举手之劳的善意尤为弥足珍贵。</p>
-</li>
-<li><p>其实世上哪儿有什么一见钟情，所谓的一见钟情，不过是你终于遇到了那个你一直想要的人而已。人海茫茫，遇之则幸，不遇是命。其实每个人都会遇到想要的人，可惜大多数人在遇到对方时，自身却维做好准备，故而，往往遗憾地擦肩。</p>
-</li>
-<li><p>也有些情侣就想兜兜和大树一样，心智成熟时方遇见，他们知道感情不是一味的迁就，也不是一味地依赖。岁月岁将容颜打折，却赋予他们积淀，他们明白自己爱的是什么，要的是什么，也懂得如何去对待这份爱。</p>
-</li>
-<li><p>旅行是维他命，每个人都需要，但旅行绝不是包治百病的万能金丹，靠旅行来逃避现实，是无法冲根本上解决现实问题的。</p>
-</li>
-<li><p>第一堂课，老师问了一个问题：正确地做事与做正确的事，你愿意选择哪个? 她举手问：只要正确地做事，做的不就是正确的事吗？</p>
-</li>
-<li><p>旅行的意义是什么？ 是遇见、发现 还是经历？</p>
-</li>
-<li><p>我觉得最负责任的做法就是，上班认真工作，下班认真生活。</p>
-</li>
-<li><p>热情和责任，哪个更持久？ 靠热情去维持的工作不见得能长久，靠契约精神去履行自己的责任才是王道。</p>
-</li>
-<li><p>没人告诉过我，很多人一辈子只能遇见一次，插肩而过就是杳然一生。</p>
-</li>
-<li><p>源静则流清，本固则丰茂，一个人的精神能力的范围决定了他领略高级快乐的能力。</p>
-</li>
-<li><p>她和他懂的彼此等待、彼此栽种、彼此付出，她和她爱的都不仅仅是自己。越是美好的东西，越需要安静的力量去守护。</p>
-</li>
-<li><p>其实这个世界上的大部分传奇，不过是普普通通的人们将心意化作了行动而已。不论是驻守还是漂流，不论是多项选择还是单项选择。</p>
-</li>
-<li><p>情义这东西，携手同行一程容易，难的是来日方长。缘来则聚，缘尽则散，我不遗憾。</p>
-</li>
-<li><p>支教是种责任和义乌，是去付出，而不仅仅是去寻找，是一份服务于他人的工作，而不是一次服务于自我的旅行。真正负责任的支教志愿者，不应该是一个只有热情的支教旅行者。</p>
-</li>
-<li><p>人真的是很奇怪的动物。</p>
-</li>
-<li><p>我只知道他身上的每一种特质我都接受，他所有的行为我都认可。</p>
-</li>
-<li><p>好日子不是别人单方面给的，我既然真爱他，就不能单方面地指望他、倚靠他、想他索取。他照顾我，我照顾他，两个人都认真地付出，才有好日子。</p>
-</li>
-<li><p>世上没有什么命中注定，所谓命中注定，都基于你过去和当下有意无意的选择。</p>
-</li>
-<li><p>其实不论出世入世，只要心是定的，每种选择都是命中注定的好因果。</p>
-</li>
-<li><p>我记得尼采说，每句话都是偏见，只要不纠结与偏见就好。</p>
-</li>
-<li><p>善意是种天赋，而善意是种选择。选择善意，即是选择幸福。</p>
-</li>
-<li><p>释迦牟尼的一句话：“伸手需要一瞬间，牵手却要很多年，无论你遇见谁，他都是你生命该出现的人，绝非偶然”。–––若无相欠，怎会相见。</p>
-</li>
-<li><p>命运善嫉，总吝啬赋予世人恒久的平静，总猝不及防地把人一下子塞进过山车，任你怎么恐惧挣扎也不肯轻易停下来，非要把圆满的颠簸成支离破碎的，再命你耗尽半生去拼补。</p>
-</li>
-<li><p>众人是不关心自己的，他们只关心自己熟悉的事物，越是缺少德性的社会，人们越是愿意占领道德制高点，以享受头羊引领羊群般的虚假快感。</p>
-</li>
-<li><p>一个人能崇拜英雄，他多少还有上进的希望，因为他还有道德方面的价值意识。<br>朱先生是主张维持英雄崇拜的，他认为人在青年时代，意象的力量大于概念，与其向他们说仁义道德，不如指出几个有血有肉的人给他们看。</p>
-</li>
-<li><p>伦理道德是群体中建筑起来的，环境条件不同，尺度和底线不同。人性是需要约束的，而酒是解开这种约束的钥匙之一。</p>
-</li>
+</ul>
+<p>配置完成后, storm就会定期的往task发送ticktuple<br>只需要通过isTickTuple来判断是否为tickTuple, 就可以完成定时触发的功能<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">boolean</span> <span class="title">isTickTuple</span><span class="params">(Tuple tuple)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> tuple.getSourceComponent().equals(Constants.SYSTEM_COMPONENT_ID) \\ SYSTEM_COMPONENT_ID == <span class="string">"__system"</span></span><br><span class="line">        &amp;&amp; tuple.getSourceStreamId().equals(Constants.SYSTEM_TICK_STREAM_ID); \\ SYSTEM_TICK_STREAM_ID == <span class="string">"__tick"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="计时器线程timer_(backtype-storm-timer)">计时器线程timer (backtype.storm.timer)</h2><p>如何使用呢？有没有java API ?<br><a href="http://www.cnblogs.com/fxjwind/p/3166945.html" target="_blank" rel="external">源码分析</a></p>
+<h3 id="原理">原理</h3><p>timer是基于PriorityQueue实现的(和PriorityBlockingQueue区别, 在于没有阻塞机制, 不是线程安全的),</p>
+<p>整个过程： 开个timer-thread, 不断check PriorityQueue里面时间最小的timer是否已经可以触发。如果可以, 就poll出来, 调用callback, 并sleep。</p>
+<blockquote>
+<p>唯一需要说的是, 这里使用Semaphore,<br>信号量和lock相似, 都是用于互斥<br>不同在于, 信号量模拟资源管理, 所以不同于lock的排他, 信号量可以接收多个aquire(取决于配置)<br>另外一个比较大的区别, lock是解铃还须系铃人, 谁锁谁解, 而信号量无所谓, 任何线程都可以调用release, 或acquire<br>这里使用信号量, 是用于在cancel-timer时, 等待timer-thread结束</p>
+</blockquote>
+<h2 id="Java_Timer的使用">Java Timer的使用</h2><p><a href="http://batitan.iteye.com/blog/253483" target="_blank" rel="external">timer</a><br><a href="https://docs.oracle.com/javase/7/docs/api/java/util/TimerTask.html" target="_blank" rel="external">官方文档</a></p>
+<h2 id="Maven的第三方包管理">Maven的第三方包管理</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>storm-core<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">version</span>&gt;</span>0.9.4<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="title">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>scope:</strong></p>
+<ul>
+<li><code>compile</code> </li>
+<li><code>provided</code> mvn assembly:assembly 打包的时候，不会把它打进依赖包</li>
 </ul>
   
 	</div>
@@ -203,13 +128,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/life/">life</a>
+  <a class="article-category-link" href="/categories/storm/">storm</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/reading/">reading</a>
+  <span></span> <a href="/tags/storm/">storm</a>
   </div>
 
 </div>
@@ -218,7 +143,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.eechodsmy.com/2015/04/20/乖-摸摸头/" data-title="乖 摸摸头 | Epoch" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/" data-title="storm的定时任务 | Epoch" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -232,18 +157,18 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2015/04/20/Intellij IDEA 快捷键整理/" title="Intellij IDEA 快捷键整理">
+ <a href="/2015/05/23/未来的职业规划参考/" title="未来的职业规划参考">
   <strong>上一篇：</strong><br/>
   <span>
-  Intellij IDEA 快捷键整理</span>
+  未来的职业规划参考</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2015/04/19/徒步牛背山/"  title="徒步牛背山">
+<a href="/2015/05/07/期权浅析/"  title="期权浅析">
  <strong>下一篇：</strong><br/> 
- <span>徒步牛背山
+ <span>期权浅析
 </span>
 </a>
 </div>
@@ -252,7 +177,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/04/20/乖-摸摸头/" data-title="乖 摸摸头" data-url="http://www.eechodsmy.com/2015/04/20/乖-摸摸头/"></div>
+	<div class="ds-thread" data-thread-key="2015/05/13/7 storm的定时任务/" data-title="storm的定时任务" data-url="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/"></div>
 </section>
 
 
@@ -268,7 +193,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm中的定时"><span class="toc-number">1.</span> <span class="toc-text">Storm中的定时</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#isTickTuple_定时触发"><span class="toc-number">1.1.</span> <span class="toc-text">isTickTuple 定时触发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计时器线程timer_(backtype-storm-timer)"><span class="toc-number">1.2.</span> <span class="toc-text">计时器线程timer (backtype.storm.timer)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.2.1.</span> <span class="toc-text">原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java_Timer的使用"><span class="toc-number">1.3.</span> <span class="toc-text">Java Timer的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven的第三方包管理"><span class="toc-number">1.4.</span> <span class="toc-text">Maven的第三方包管理</span></a></li></ol></li></ol>
  
   </div>
 
