@@ -1,0 +1,538 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>8 Performance Tuning - Storm | Epoch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Epoch">
+    
+
+    
+    <meta name="description" content="Performance Tuning - StormBefore reading this page, please read Operation Experience and Programming Experience
+
+First decisionTopology 消息可靠性的选择，选择适合自己的可靠性。Before design a application, user must know">
+<meta property="og:type" content="article">
+<meta property="og:title" content="8 Performance Tuning - Storm">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/07/03/8-Performance-Tuning-Storm/index.html">
+<meta property="og:site_name" content="Epoch">
+<meta property="og:description" content="Performance Tuning - StormBefore reading this page, please read Operation Experience and Programming Experience
+
+First decisionTopology 消息可靠性的选择，选择适合自己的可靠性。Before design a application, user must know">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="8 Performance Tuning - Storm">
+<meta name="twitter:description" content="Performance Tuning - StormBefore reading this page, please read Operation Experience and Programming Experience
+
+First decisionTopology 消息可靠性的选择，选择适合自己的可靠性。Before design a application, user must know">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.jpg">
+    
+    
+    <link rel="apple-touch-icon" href="/img/favicon.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/favicon.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Epoch">Epoch</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:www.eechodsmy.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/07/03/8-Performance-Tuning-Storm/" title="8 Performance Tuning - Storm" itemprop="url">8 Performance Tuning - Storm</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
+		
+  <p class="article-time">
+    <time datetime="2015-07-03T09:12:46.000Z" itemprop="datePublished"> 发表于 2015-07-03</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Performance_Tuning_-_Storm"><span class="toc-number">1.</span> <span class="toc-text">Performance Tuning - Storm</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#First_decision"><span class="toc-number">2.</span> <span class="toc-text">First decision</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Find_out_which_component’s_throughput_is_least"><span class="toc-number">3.</span> <span class="toc-text">Find out which component’s throughput is least</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint_task"><span class="toc-number">4.</span> <span class="toc-text">Hotpoint task</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint_worker"><span class="toc-number">5.</span> <span class="toc-text">Hotpoint worker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint/Bad_Supervisor"><span class="toc-number">6.</span> <span class="toc-text">Hotpoint/Bad Supervisor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint_spout"><span class="toc-number">7.</span> <span class="toc-text">Hotpoint spout</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Worker_number"><span class="toc-number">8.</span> <span class="toc-text">Worker number</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Some_JStorm_setting_for_performance"><span class="toc-number">9.</span> <span class="toc-text">Some JStorm setting for performance</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="Performance_Tuning_-_Storm">Performance Tuning - Storm</h1><p>Before reading this page, please read <a href="https://github.com/alibaba/jstorm/wiki/Operation-Experience" target="_blank" rel="external">Operation Experience</a> and <a href="https://github.com/alibaba/jstorm/wiki/Programming-Experience" target="_blank" rel="external">Programming Experience</a></p>
+<hr>
+<h1 id="First_decision">First decision</h1><p>Topology 消息可靠性的选择，选择适合自己的可靠性。<br>Before design a application, user must know the use scenario of ackerless/acker/trident frameworker. From performance side, the performance sequence is as following: ackerless &gt; acker &gt; trident.  Normally performance isn’t the key point, developer must do tradeoff from performance/stability/scalability.</p>
+<h1 id="Find_out_which_component’s_throughput_is_least">Find out which component’s throughput is least</h1><p>计算Spout、Bolt、Acker的吞吐量，加大小吞吐量的并发度。<br>All tuples of topology in JStorm is being past in one message pipeline, the whole topology’s throughput will be decided by the lowest component’s throughput, so find out the bottleneck of topology is a key point.<br>Here list one example to find out which component’s throughput is least in JStorm 0.9.6.1.<br>SpoutA -&gt; BoltA -&gt; acker<br>SpoutA’s max throughpout is (parallelism <em> (1000/“NextTuple: Time(ms)”))<br>BoltA’s max throughpout is (parallel </em> (1000/max(“Deserialize: Time(ms)”, “Execute: Time(ms)”, “Serialize: Time(ms)”)))<br>Acker’s max throughpout is (parallel * (1000/max(“Deserialize: Time(ms)”, “Execute: Time(ms)”, “Serialize: Time(ms)”))) </p>
+<p>In this method, we can find out which component’s throughpout is the bottleneck of topology, so the simplest improving throughpout’s method is enlarge the bottleneck component’s parallelism.</p>
+<p>Another easy solution to find out bottleneck component is finding out whose queues are full, if most of one component’s queues are full, please enlarge the component’s parallelism.</p>
+<h1 id="Hotpoint_task">Hotpoint task</h1><p><code>fieldGrouping</code>分组不均衡，可以使用<strong>PKG</strong><br>When using fieldGrouping, please take care of hotpoint task which receive more data than other tasks belonging to the same component, this will lower down the whole topology’s throughput greatly. Please make task load as equal as possible.</p>
+<h1 id="Hotpoint_worker">Hotpoint worker</h1><p>不知道<br>For some heavy component, please make sure every worker’s loader is almost equal, so the parallelism of the component had better be multiple of the worker number.</p>
+<h1 id="Hotpoint/Bad_Supervisor">Hotpoint/Bad Supervisor</h1><p>不知道<br>Please pay attention to this problem When whole cluster’s load is heavy. Here are several solution to resolve this problem:</p>
+<ol>
+<li>let the worker number is multiple of the supervisor number and reduce hotpoint  worker</li>
+<li>Do connection check after install one cluster, You can use the installation package’s example to do this check.</li>
+<li>Check supervisor’s page, check whether there are some workers whose one of CPU usage/“Batch Trans Time over network(ms)”/“Netty Client Batch Size” is pretty high</li>
+</ol>
+<h1 id="Hotpoint_spout">Hotpoint spout</h1><p>Normally spout consumer Kafka/RockeMq/TimeTunel/Redis, the data source’s partition number had better be the multiple of spout’s number.</p>
+<h1 id="Worker_number">Worker number</h1><p>单个worker承担的用户tasks数量，在性能测试的时候，one topology 不要超过<code>12个worker</code>，每个worker不要超过<code>18个tasks</code>。<br>It had better run <code>2 ~ 8 tasks</code> in one worker, the more data to be handled in one task, the smaller the number. Running multiple tasks in one worker will save much CPU, more data will be past in one process, no network cost, no serialize/deserialize operation. But the number bigger than 12 isn’t be suggested, due to thread switch maybe cost much CPU.</p>
+<h1 id="Some_JStorm_setting_for_performance">Some JStorm setting for performance</h1><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">topology.<span class="built_in">max</span>.spout.pending: <span class="constant">null</span>                 <span class="comment">#this will effect spout emit tuple number in one time, the bigger it is, the more tuple it will emit, the easier occur failure</span></span><br><span class="line">topology.message.timeout.<span class="built_in">secs</span>: <span class="number">30</span>                 <span class="comment">#the tuple's timeout seconds</span></span><br><span class="line">topology.executor.receive.buffer.size: <span class="number">256</span>        <span class="comment">#the task's receiving queue size(bytes)</span></span><br><span class="line">topology.executor.<span class="built_in">send</span>.buffer.size: <span class="number">256</span>           <span class="comment">#the task's sending queue size(bytes)</span></span><br><span class="line">topology.transfer.buffer.size: <span class="number">1024</span>               <span class="comment"># the worker's sending/receive queue size(bytes), shared by all tasks</span></span><br><span class="line">kryo.enable: <span class="constant">true</span>                                 <span class="comment"># if this is true, it will reduce deserialize time, but the value of emit tuple should register into kryo factory.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## network settings</span></span><br><span class="line">storm.messaging.transport: <span class="string">"com.alibaba.jstorm.message.netty.NettyContext"</span></span><br><span class="line">storm.messaging.netty.sync.mode: <span class="constant">false</span>            <span class="comment">## send message with sync or async mode</span></span><br><span class="line">storm.messaging.netty.transfer.async.batch: <span class="constant">true</span>  <span class="comment"># If async and batch is used in netty transfer, netty will batch message</span></span><br><span class="line"><span class="comment"># If async and batch is used in netty transfer, netty will batch message</span></span><br><span class="line">storm.messaging.netty.transfer.async.batch: <span class="constant">true</span></span><br><span class="line"><span class="comment"># If storm.messaging.netty.transfer.async.batch is enable, the batch size.</span></span><br><span class="line">storm.messaging.netty.transfer.batch.size: <span class="number">262144</span></span><br><span class="line"><span class="comment"># every "storm.messaging.netty.flush.check.interval.ms" ms, netty will flush the batch.</span></span><br><span class="line">storm.messaging.netty.flush.check.interval.ms: <span class="number">10</span></span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.eechodsmy.com/2015/07/03/8-Performance-Tuning-Storm/" data-title="8 Performance Tuning - Storm | Epoch" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/05/23/未来的职业规划参考/"  title="未来的职业规划参考">
+ <strong>下一篇：</strong><br/> 
+ <span>未来的职业规划参考
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/07/03/8-Performance-Tuning-Storm/" data-title="8 Performance Tuning - Storm" data-url="http://www.eechodsmy.com/2015/07/03/8-Performance-Tuning-Storm/"></div>
+</section>
+
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Performance_Tuning_-_Storm"><span class="toc-number">1.</span> <span class="toc-text">Performance Tuning - Storm</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#First_decision"><span class="toc-number">2.</span> <span class="toc-text">First decision</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Find_out_which_component’s_throughput_is_least"><span class="toc-number">3.</span> <span class="toc-text">Find out which component’s throughput is least</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint_task"><span class="toc-number">4.</span> <span class="toc-text">Hotpoint task</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint_worker"><span class="toc-number">5.</span> <span class="toc-text">Hotpoint worker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint/Bad_Supervisor"><span class="toc-number">6.</span> <span class="toc-text">Hotpoint/Bad Supervisor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hotpoint_spout"><span class="toc-number">7.</span> <span class="toc-text">Hotpoint spout</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Worker_number"><span class="toc-number">8.</span> <span class="toc-text">Worker number</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Some_JStorm_setting_for_performance"><span class="toc-number">9.</span> <span class="toc-text">Some JStorm setting for performance</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Epoch/" title="Epoch">Epoch<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/life/" title="life">life<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/storm/" title="storm">storm<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/tool/" title="tool">tool<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/storm/" title="storm">storm<sup>10</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/life/" title="life">life<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/install/" title="install">install<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/travel/" title="travel">travel<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/reading/" title="reading">reading<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/clothes/" title="clothes">clothes<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/One-Piece/" title="One Piece">One Piece<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/职业/" title="职业">职业<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ECHO/" title="ECHO">ECHO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/摄影/" title="摄影">摄影<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/picture/" title="picture">picture<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shell/" title="shell">shell<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/技巧/" title="技巧">技巧<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.zcool.com.cn/u/13094813" target="_blank" title="EPOCH&#39;s Blog">EPOCH&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="widget tag">
+<p class="asidetitle">博主簡介</p>
+<ul class="entry">
+<li>ECHO</li>
+<li>现状：正在奋斗ing。</li>
+</ul>
+</div> 
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 不善于颠覆旧世界， <br/>
+			也能创造新世界。</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1717383477" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="Epoch">Epoch</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ECHO"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'ECHO';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
