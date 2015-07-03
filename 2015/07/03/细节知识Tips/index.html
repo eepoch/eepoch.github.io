@@ -4,28 +4,28 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>storm的定时任务 | Epoch</title>
+    <title>Epoch</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Epoch">
     
 
     
-    <meta name="description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
-
-由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
+    <meta name="description" content="细节知识TipsJava
+静态导入是JDK1.5中的新特性。一般我们导入一个类都用 import com.....ClassName;而静态导入是这样：import static com.....ClassName.*;这里的多了个static，意思是导入这个类里的静态方法。然后在这个类中，就可以直接用方法名调用静态方法，而不必用ClassName.方法名 的方式来调用。
+其目的是：为了减少字符输">
 <meta property="og:type" content="article">
-<meta property="og:title" content="storm的定时任务">
-<meta property="og:url" content="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/index.html">
+<meta property="og:title" content="Epoch">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/07/03/细节知识Tips/index.html">
 <meta property="og:site_name" content="Epoch">
-<meta property="og:description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
-
-由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
+<meta property="og:description" content="细节知识TipsJava
+静态导入是JDK1.5中的新特性。一般我们导入一个类都用 import com.....ClassName;而静态导入是这样：import static com.....ClassName.*;这里的多了个static，意思是导入这个类里的静态方法。然后在这个类中，就可以直接用方法名调用静态方法，而不必用ClassName.方法名 的方式来调用。
+其目的是：为了减少字符输">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="storm的定时任务">
-<meta name="twitter:description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
-
-由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
+<meta name="twitter:title" content="Epoch">
+<meta name="twitter:description" content="细节知识TipsJava
+静态导入是JDK1.5中的新特性。一般我们导入一个类都用 import com.....ClassName;而静态导入是这样：import static com.....ClassName.*;这里的多了个static，意思是导入这个类里的静态方法。然后在这个类中，就可以直接用方法名调用静态方法，而不必用ClassName.方法名 的方式来调用。
+其目的是：为了减少字符输">
 
     
     <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
@@ -81,14 +81,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/13/7 storm的定时任务/" title="storm的定时任务" itemprop="url">storm的定时任务</a>
+      <a href="/2015/07/03/细节知识Tips/" title="" itemprop="url"></a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-13T11:23:19.000Z" itemprop="datePublished"> 发表于 2015-05-13</time>
+    <time datetime="2015-07-03T09:25:37.839Z" itemprop="datePublished"> 发表于 2015-07-03</time>
     
   </p>
 </header>
@@ -97,46 +97,32 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm中的定时"><span class="toc-number">1.</span> <span class="toc-text">Storm中的定时</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#isTickTuple_定时触发"><span class="toc-number">1.1.</span> <span class="toc-text">isTickTuple 定时触发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计时器线程timer_(backtype-storm-timer)"><span class="toc-number">1.2.</span> <span class="toc-text">计时器线程timer (backtype.storm.timer)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.2.1.</span> <span class="toc-text">原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java_Timer的使用"><span class="toc-number">1.3.</span> <span class="toc-text">Java Timer的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven的第三方包管理"><span class="toc-number">1.4.</span> <span class="toc-text">Maven的第三方包管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务"><span class="toc-number">1.5.</span> <span class="toc-text">定时任务</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#细节知识Tips"><span class="toc-number">1.</span> <span class="toc-text">细节知识Tips</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Java"><span class="toc-number">2.</span> <span class="toc-text">Java</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务"><span class="toc-number">2.1.</span> <span class="toc-text">定时任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL批量SQL插入性能优化"><span class="toc-number">2.2.</span> <span class="toc-text">MySQL批量SQL插入性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jps"><span class="toc-number">2.3.</span> <span class="toc-text">jps</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#显示当前所有java进程pid"><span class="toc-number">2.3.1.</span> <span class="toc-text">显示当前所有java进程pid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#找到需要查看的进程ID"><span class="toc-number">2.3.2.</span> <span class="toc-text">找到需要查看的进程ID</span></a></li></ol></li></ol></li></ol>
 		
 		</div>
 		
-		<h1 id="Storm中的定时">Storm中的定时</h1><h2 id="isTickTuple_定时触发">isTickTuple 定时触发</h2><p>因为其使用Storm的TickTuple特性，定时发送心跳。<br>这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用<br>“<strong>system” component会定时往task发送 “</strong>tick” stream的tuple<br>发送频率</p>
-<ul>
-<li>由<strong>TOPOLOGY_TICK_TUPLE_FREQ_SECS</strong>来配置, 可以在default.ymal里面配置 。</li>
-<li>也可以在代码里面通过getComponentConfiguration()来进行配置,<br>下面这段代码是写在<code>Bolt</code>里面的，这是一个<code>@override</code><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; getComponentConfiguration() &#123;</span><br><span class="line">     <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; conf = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt;();</span><br><span class="line">     conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, emitFrequencyInSeconds);</span><br><span class="line">     <span class="keyword">return</span> conf;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+		<h1 id="细节知识Tips">细节知识Tips</h1><h1 id="Java">Java</h1><ul>
+<li><p>静态导入是JDK1.5中的新特性。一般我们导入一个类都用 <code>import com.....ClassName;</code><br>而静态导入是这样：<code>import static com.....ClassName.*;</code>这里的多了个static，意思是导入这个类里的静态方法。<br>然后在这个类中，就可以直接用方法名调用静态方法，而不必用ClassName.方法名 的方式来调用。</p>
+<p>其目的是：为了减少字符输入量，提高代码的可阅读性</p>
 </li>
 </ul>
-<p>配置完成后, storm就会定期的往task发送ticktuple<br>只需要通过isTickTuple来判断是否为tickTuple, 就可以完成定时触发的功能<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">boolean</span> <span class="title">isTickTuple</span><span class="params">(Tuple tuple)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> tuple.getSourceComponent().equals(Constants.SYSTEM_COMPONENT_ID) \\ SYSTEM_COMPONENT_ID == <span class="string">"__system"</span></span><br><span class="line">        &amp;&amp; tuple.getSourceStreamId().equals(Constants.SYSTEM_TICK_STREAM_ID); \\ SYSTEM_TICK_STREAM_ID == <span class="string">"__tick"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="计时器线程timer_(backtype-storm-timer)">计时器线程timer (backtype.storm.timer)</h2><p>如何使用呢？有没有java API ?<br><a href="http://www.cnblogs.com/fxjwind/p/3166945.html" target="_blank" rel="external">源码分析</a></p>
-<h3 id="原理">原理</h3><p>timer是基于PriorityQueue实现的(和PriorityBlockingQueue区别, 在于没有阻塞机制, 不是线程安全的),</p>
-<p>整个过程： 开个timer-thread, 不断check PriorityQueue里面时间最小的timer是否已经可以触发。如果可以, 就poll出来, 调用callback, 并sleep。</p>
-<blockquote>
-<p>唯一需要说的是, 这里使用Semaphore,<br>信号量和lock相似, 都是用于互斥<br>不同在于, 信号量模拟资源管理, 所以不同于lock的排他, 信号量可以接收多个aquire(取决于配置)<br>另外一个比较大的区别, lock是解铃还须系铃人, 谁锁谁解, 而信号量无所谓, 任何线程都可以调用release, 或acquire<br>这里使用信号量, 是用于在cancel-timer时, 等待timer-thread结束</p>
-</blockquote>
-<h2 id="Java_Timer的使用">Java Timer的使用</h2><p><a href="http://batitan.iteye.com/blog/253483" target="_blank" rel="external">timer</a><br><a href="https://docs.oracle.com/javase/7/docs/api/java/util/TimerTask.html" target="_blank" rel="external">官方文档</a></p>
-<h2 id="Maven的第三方包管理">Maven的第三方包管理</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>storm-core<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">version</span>&gt;</span>0.9.4<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="title">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><strong>scope:</strong></p>
-<ul>
-<li><code>compile</code> </li>
-<li><code>provided</code> mvn assembly:assembly 打包的时候，不会把它打进依赖包</li>
-</ul>
 <h2 id="定时任务">定时任务</h2><p>在实际的情况中可能会需要有的线程是定期执行的,有的线程是只执行一次,如果通过<code>Timer</code>去触发,会涉及线程的切换以及线程安全问题,这对这种情况从jdk1.5开始添加了<code>ScheduledThreadPoolExecutor</code> 组件,这种组件主要就是用来解决前面出现的问题,通过这个组件即可以定期的去执行一个任务,也可以只执行一次,也可以把这两种情况一起使用。</p>
+<p>在<strong>Storm</strong>中不要用Timer。</p>
+<h2 id="MySQL批量SQL插入性能优化">MySQL批量SQL插入性能优化</h2><p> 一条SQL语句插入多条数据。<br>常用的插入语句如：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`insert_table`</span> (<span class="string">`datetime`</span>, <span class="string">`uid`</span>, <span class="string">`content`</span>, <span class="string">`type`</span>) </span><br><span class="line">    <span class="keyword">VALUES</span> (<span class="string">'0'</span>, <span class="string">'userid_0'</span>, <span class="string">'content_0'</span>, <span class="number">0</span>);</span></span><br><span class="line"><span class="operator"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`insert_table`</span> (<span class="string">`datetime`</span>, <span class="string">`uid`</span>, <span class="string">`content`</span>, <span class="string">`type`</span>) </span><br><span class="line">    <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'userid_1'</span>, <span class="string">'content_1'</span>, <span class="number">1</span>);</span></span><br></pre></td></tr></table></figure></p>
+<p> 修改成：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`insert_table`</span> (<span class="string">`datetime`</span>, <span class="string">`uid`</span>, <span class="string">`content`</span>, <span class="string">`type`</span>) </span><br><span class="line">    <span class="keyword">VALUES</span> (<span class="string">'0'</span>, <span class="string">'userid_0'</span>, <span class="string">'content_0'</span>, <span class="number">0</span>), (<span class="string">'1'</span>, <span class="string">'userid_1'</span>, <span class="string">'content_1'</span>, <span class="number">1</span>);</span></span><br></pre></td></tr></table></figure></p>
+<p> 修改后的插入操作能够提高程序的插入效率。这里第二种SQL执行效率高的主要原因是合并后日志量（MySQL的binlog和innodb的事务让日志）减少了，降低日志刷盘的数据量和频率，从而提高效率。通过合并SQL语句，同时也能减少SQL语句解析的次数，减少网络传输的IO。<br>这里提供一些测试对比数据，分别是进行单条数据的导入与转化成一条SQL语句进行导入，分别测试1百、1千、1万条数据记录。</p>
+<blockquote>
+<p>注意事项：<br>SQL语句是有长度限制，在进行数据合并在同一SQL中务必不能超过SQL长度限制，通过max_allowed_packet配置可以修改，默认是1M，测试时修改为8M。</p>
+</blockquote>
+<h2 id="jps">jps</h2><p>jps - 监控JVM进程状态<br>jinfo可以输出并修改运行时的java 进程的opts。</p>
+<h3 id="显示当前所有java进程pid">显示当前所有java进程pid</h3><p><code>jps -v</code><br>-l 是显示主类 ，若是jar包，则显示包名<br>-v 是启动时传递给虚拟机的参数<br>-m 是启动时传递给main方法的参数</p>
+<h3 id="找到需要查看的进程ID">找到需要查看的进程ID</h3><p>$<code>jps -lvm</code></p>
+<p>7124  -Xms128M -Xmx512M -Dfile.encoding=UTF-8 -XstartOnFirstThread</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/storm/">storm</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/storm/">storm</a>
-  </div>
 
 </div>
 
@@ -144,7 +130,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/" data-title="storm的定时任务 | Epoch" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.eechodsmy.com/2015/07/03/细节知识Tips/" data-title="Epoch" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -158,18 +144,18 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2015/05/23/未来的职业规划参考/" title="未来的职业规划参考">
+ <a href="/2015/07/03/Storm 事务/" title="">
   <strong>上一篇：</strong><br/>
   <span>
-  未来的职业规划参考</span>
+  (no title)</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2015/05/07/期权浅析/"  title="期权浅析">
+<a href="/2015/07/03/8-Performance-Tuning-Storm/"  title="8 Performance Tuning - Storm">
  <strong>下一篇：</strong><br/> 
- <span>期权浅析
+ <span>8 Performance Tuning - Storm
 </span>
 </a>
 </div>
@@ -178,7 +164,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/13/7 storm的定时任务/" data-title="storm的定时任务" data-url="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/"></div>
+	<div class="ds-thread" data-thread-key="2015/07/03/细节知识Tips/" data-title="" data-url="http://www.eechodsmy.com/2015/07/03/细节知识Tips/"></div>
 </section>
 
 
@@ -194,7 +180,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm中的定时"><span class="toc-number">1.</span> <span class="toc-text">Storm中的定时</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#isTickTuple_定时触发"><span class="toc-number">1.1.</span> <span class="toc-text">isTickTuple 定时触发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计时器线程timer_(backtype-storm-timer)"><span class="toc-number">1.2.</span> <span class="toc-text">计时器线程timer (backtype.storm.timer)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.2.1.</span> <span class="toc-text">原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java_Timer的使用"><span class="toc-number">1.3.</span> <span class="toc-text">Java Timer的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven的第三方包管理"><span class="toc-number">1.4.</span> <span class="toc-text">Maven的第三方包管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务"><span class="toc-number">1.5.</span> <span class="toc-text">定时任务</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#细节知识Tips"><span class="toc-number">1.</span> <span class="toc-text">细节知识Tips</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Java"><span class="toc-number">2.</span> <span class="toc-text">Java</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务"><span class="toc-number">2.1.</span> <span class="toc-text">定时任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL批量SQL插入性能优化"><span class="toc-number">2.2.</span> <span class="toc-text">MySQL批量SQL插入性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jps"><span class="toc-number">2.3.</span> <span class="toc-text">jps</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#显示当前所有java进程pid"><span class="toc-number">2.3.1.</span> <span class="toc-text">显示当前所有java进程pid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#找到需要查看的进程ID"><span class="toc-number">2.3.2.</span> <span class="toc-text">找到需要查看的进程ID</span></a></li></ol></li></ol></li></ol>
  
   </div>
 

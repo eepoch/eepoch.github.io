@@ -4,28 +4,22 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>storm的定时任务 | Epoch</title>
+    <title>Epoch</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Epoch">
     
 
     
-    <meta name="description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
-
-由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
+    <meta name="description" content="广告基础知识基本概念cpmCPM - Cost per thousand (CPM，按千次展现收费) is one of the online payment models by which advertisers pays for every 1000 impressions of their advertisement. Prices typically range from $1 to ov">
 <meta property="og:type" content="article">
-<meta property="og:title" content="storm的定时任务">
-<meta property="og:url" content="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/index.html">
+<meta property="og:title" content="Epoch">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/07/03/广告基础知识/index.html">
 <meta property="og:site_name" content="Epoch">
-<meta property="og:description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
-
-由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
+<meta property="og:description" content="广告基础知识基本概念cpmCPM - Cost per thousand (CPM，按千次展现收费) is one of the online payment models by which advertisers pays for every 1000 impressions of their advertisement. Prices typically range from $1 to ov">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="storm的定时任务">
-<meta name="twitter:description" content="Storm中的定时isTickTuple 定时触发因为其使用Storm的TickTuple特性，定时发送心跳。这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用“system” component会定时往task发送 “tick” stream的tuple发送频率
-
-由TOPOLOGY_TICK_TUPLE_FREQ_SECS来配置, 可以在default.ymal里面配置 。">
+<meta name="twitter:title" content="Epoch">
+<meta name="twitter:description" content="广告基础知识基本概念cpmCPM - Cost per thousand (CPM，按千次展现收费) is one of the online payment models by which advertisers pays for every 1000 impressions of their advertisement. Prices typically range from $1 to ov">
 
     
     <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
@@ -81,14 +75,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/05/13/7 storm的定时任务/" title="storm的定时任务" itemprop="url">storm的定时任务</a>
+      <a href="/2015/07/03/广告基础知识/" title="" itemprop="url"></a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
 		
   <p class="article-time">
-    <time datetime="2015-05-13T11:23:19.000Z" itemprop="datePublished"> 发表于 2015-05-13</time>
+    <time datetime="2015-07-03T10:42:34.632Z" itemprop="datePublished"> 发表于 2015-07-03</time>
     
   </p>
 </header>
@@ -97,46 +91,34 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm中的定时"><span class="toc-number">1.</span> <span class="toc-text">Storm中的定时</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#isTickTuple_定时触发"><span class="toc-number">1.1.</span> <span class="toc-text">isTickTuple 定时触发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计时器线程timer_(backtype-storm-timer)"><span class="toc-number">1.2.</span> <span class="toc-text">计时器线程timer (backtype.storm.timer)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.2.1.</span> <span class="toc-text">原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java_Timer的使用"><span class="toc-number">1.3.</span> <span class="toc-text">Java Timer的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven的第三方包管理"><span class="toc-number">1.4.</span> <span class="toc-text">Maven的第三方包管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务"><span class="toc-number">1.5.</span> <span class="toc-text">定时任务</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#广告基础知识"><span class="toc-number">1.</span> <span class="toc-text">广告基础知识</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">2.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dsp"><span class="toc-number">3.</span> <span class="toc-text">dsp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1_DSP特点"><span class="toc-number">3.1.</span> <span class="toc-text">1 DSP特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2_DSP核心特征"><span class="toc-number">3.2.</span> <span class="toc-text">2 DSP核心特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3_RTB模式"><span class="toc-number">3.3.</span> <span class="toc-text">3 RTB模式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ali术语"><span class="toc-number">4.</span> <span class="toc-text">ali术语</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="Storm中的定时">Storm中的定时</h1><h2 id="isTickTuple_定时触发">isTickTuple 定时触发</h2><p>因为其使用Storm的TickTuple特性，定时发送心跳。<br>这个功能挺有用, 比如数据库批量存储, 或者这里的时间窗口的统计等应用<br>“<strong>system” component会定时往task发送 “</strong>tick” stream的tuple<br>发送频率</p>
-<ul>
-<li>由<strong>TOPOLOGY_TICK_TUPLE_FREQ_SECS</strong>来配置, 可以在default.ymal里面配置 。</li>
-<li>也可以在代码里面通过getComponentConfiguration()来进行配置,<br>下面这段代码是写在<code>Bolt</code>里面的，这是一个<code>@override</code><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; getComponentConfiguration() &#123;</span><br><span class="line">     <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; conf = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt;();</span><br><span class="line">     conf.put(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS, emitFrequencyInSeconds);</span><br><span class="line">     <span class="keyword">return</span> conf;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>配置完成后, storm就会定期的往task发送ticktuple<br>只需要通过isTickTuple来判断是否为tickTuple, 就可以完成定时触发的功能<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">boolean</span> <span class="title">isTickTuple</span><span class="params">(Tuple tuple)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> tuple.getSourceComponent().equals(Constants.SYSTEM_COMPONENT_ID) \\ SYSTEM_COMPONENT_ID == <span class="string">"__system"</span></span><br><span class="line">        &amp;&amp; tuple.getSourceStreamId().equals(Constants.SYSTEM_TICK_STREAM_ID); \\ SYSTEM_TICK_STREAM_ID == <span class="string">"__tick"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="计时器线程timer_(backtype-storm-timer)">计时器线程timer (backtype.storm.timer)</h2><p>如何使用呢？有没有java API ?<br><a href="http://www.cnblogs.com/fxjwind/p/3166945.html" target="_blank" rel="external">源码分析</a></p>
-<h3 id="原理">原理</h3><p>timer是基于PriorityQueue实现的(和PriorityBlockingQueue区别, 在于没有阻塞机制, 不是线程安全的),</p>
-<p>整个过程： 开个timer-thread, 不断check PriorityQueue里面时间最小的timer是否已经可以触发。如果可以, 就poll出来, 调用callback, 并sleep。</p>
-<blockquote>
-<p>唯一需要说的是, 这里使用Semaphore,<br>信号量和lock相似, 都是用于互斥<br>不同在于, 信号量模拟资源管理, 所以不同于lock的排他, 信号量可以接收多个aquire(取决于配置)<br>另外一个比较大的区别, lock是解铃还须系铃人, 谁锁谁解, 而信号量无所谓, 任何线程都可以调用release, 或acquire<br>这里使用信号量, 是用于在cancel-timer时, 等待timer-thread结束</p>
-</blockquote>
-<h2 id="Java_Timer的使用">Java Timer的使用</h2><p><a href="http://batitan.iteye.com/blog/253483" target="_blank" rel="external">timer</a><br><a href="https://docs.oracle.com/javase/7/docs/api/java/util/TimerTask.html" target="_blank" rel="external">官方文档</a></p>
-<h2 id="Maven的第三方包管理">Maven的第三方包管理</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>storm-core<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">version</span>&gt;</span>0.9.4<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="title">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="title">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><strong>scope:</strong></p>
-<ul>
-<li><code>compile</code> </li>
-<li><code>provided</code> mvn assembly:assembly 打包的时候，不会把它打进依赖包</li>
-</ul>
-<h2 id="定时任务">定时任务</h2><p>在实际的情况中可能会需要有的线程是定期执行的,有的线程是只执行一次,如果通过<code>Timer</code>去触发,会涉及线程的切换以及线程安全问题,这对这种情况从jdk1.5开始添加了<code>ScheduledThreadPoolExecutor</code> 组件,这种组件主要就是用来解决前面出现的问题,通过这个组件即可以定期的去执行一个任务,也可以只执行一次,也可以把这两种情况一起使用。</p>
+		<h1 id="广告基础知识">广告基础知识</h1><h1 id="基本概念">基本概念</h1><p><strong>cpm</strong><br>CPM - Cost per thousand (CPM，按千次展现收费) is one of the online payment models by which advertisers pays for every 1000 impressions of their advertisement. Prices typically range from <code>$1</code> to over <code>$50</code> per thousand impressions. This is an ideal method of payment for advertisers who want to guarantee only the number of people who sees their banner. The “M” in CPM is from the Roman numeral for 1000. The Roman numeral M was derived from the latin word “mille” meaning “thousand”.<br>　<br>收费最科学的办法是按照有多少人看到你的广告来收费。按访问人次收费已经成为移动广告平台的惯例。</p>
+<p><strong>cpc</strong><br>CPC - Cost per click (CPC，按点击付费) is one of the online payment models by which advertisers pays for each click through made on their advertisement. Prices typically range from 1¢ to over 50¢ per click through. This is an ideal method of payment for advertisers who need to guarantee they only pay for those viewers of the banner that click on it and visit a page on their site.</p>
+<p>以每点击一次计费。这样的方法加上点击率限制可以加强作弊的难度，而且是宣传的最优方式。</p>
+<p><strong>cpa</strong><br>CPA - Cost per action (CPA，按效果付费), sometimes known as Pay Per Action or <code>PPA</code>, is one of the online payment models by which advertisers pays for ever action (sale or registration) completed as a result of a visitor clicking on their advertisement. Prices typically range from <code>$1</code> to <code>$25</code> or if a percentage of a sale 5% to 25%. This is an ideal method of payment for advertisers who want to guarantee only the number of customers generated as a result of a advertise man</p>
+<p>CPA计价方式是指按广告投放实际效果，即按回应的有效问卷或定单来计费，而不限广告投放量。</p>
+<p><strong>CPD</strong></p>
+<p>CPD - Cost per day (CPD，按天付费) is a payment model by which advertisers pay for their ads to be shown on a daily basis.</p>
+<p>Advertiser：广告主，花钱做广告的人<br>Publisher：发布者，负责将广告发布出去的人，在广告交易中一般是收钱的一方<br>Creative：这里我暂时不知道怎么翻译好，一般指的是实际被展示出去的图/视频等。<br>Impression：Creative被显示了一次就是一个Impression<br>Click： 图/视频中通常带有链接，这个链接每被点了一次就是一个Click<br>Conversion / Action: 用户在点击链接之后又发生了广告主所期待的后续行为，如下载安装，将商品加入购物车等，统称为一次转化</p>
+<p><strong>小结</strong><br>无论采用CPM、CPC还是CPA，广告主都可以根据自身产品特性进行选择，这和传统互联网广告是一样的。由于电商行业的快速发展，目前移动广告平台还出现了CPS（按每次购买进行计费）的收费方式，但普遍效果还不够好，原因更多在于移动支付方面还有诸多不便的地方。<br>　　目前国内绝大部分移动广告平台都支持CPM、CPC、CPA计费，在选择移动广告投放时，广告主可更多考虑移动广告平台的稳定性和媒介资源深度。</p>
+<h1 id="dsp">dsp</h1><p>dsp（demand-side platform）广告需求方平台<br>在互联网广告产业中，DSP是一个系统，也是一种在线广告平台。它服务于广告主，帮助广告主在互联网或者移动互联网上进行广告投放，DSP可以使广告主更简单便捷地遵循统一的竞价和反馈方式，对位于多家广告交易平台的在线广告,以合理的价格实时购买高质量的广告库存。</p>
+<h2 id="1_DSP特点">1 DSP特点</h2><p>区别于传统的广告网络(Ad Network)，<code>DSP</code>不是从网络媒体那里包买广告位，也不是采用<code>CPD(Cost Per Day)</code>的方式获得广告位；而是从广告交易平台(AdExchange)来通过实时竞价的方式获得对广告进行曝光的机会，<code>DSP</code>通过广告交易平台对每个曝光单独购买，即采用<code>CPM(Cost Per Mille)</code>的方式获得广告位。</p>
+<h2 id="2_DSP核心特征">2 DSP核心特征</h2><p>一个真正意义的DSP，必须拥有两个核心特征，一是拥有强大的RTB(Real-Time Bidding)的基础设施和能力，二是拥有先进的用户定向(AudienceTargeting)技术。</p>
+<h2 id="3_RTB模式">3 RTB模式</h2><p>实时竞价 (Real Time Bidding)<br>简单的RTB模式：当用户访问一个网站时，SSP即向Ad Exchange广告交易平台发送用户访问讯号，随后广告位的具体信息则会经过DMP的分析匹配后发送给DSP，DSP将对此进行竞价，价高者会获得这个广告展现机会，并被目标用户看到.</p>
+<p>Publisher→SSP→Ad Exchange←→DSP←Agency←Advertiser<br><code>图片见:RTB.jpg</code></p>
+<p>简单来说，RTB讲的是机制（实时竞价），DSP说的是平台（需求方平台，服务于广告的购买方）<br>RTB：通过实时竞拍的形式买资源，可以理解为实时竞拍买资源<br>DSP：广告主的交易窗口（用于喊价），面对的是汇集各种广告资源广告交易所（ad exchange）</p>
+<p><a href="http://www.zhihu.com/question/21930953" target="_blank" rel="external">参考</a></p>
+<h1 id="ali术语">ali术语</h1><p>开放数据处理服务（Open Data Processing Service， 简称ODPS）由阿里云自主研发，提供针对TB/PB级数据、实时性要求不高的分布式处理能力，应用于数据分析、挖掘、商业智能等领域。阿里巴巴的数据业务都运行在ODPS上。</p>
+<p>PRISM-棱镜计划-广告实时数据更新监控与跟踪系统，详细见<a href="http://baike.corp.taobao.com/index.php/PRISM" target="_blank" rel="external">百科</a></p>
+<p>钻石展位：是图片类、文字类实时竞价展示推广平台。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/storm/">storm</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/storm/">storm</a>
-  </div>
 
 </div>
 
@@ -144,7 +126,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/" data-title="storm的定时任务 | Epoch" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.eechodsmy.com/2015/07/03/广告基础知识/" data-title="Epoch" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -157,19 +139,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/05/23/未来的职业规划参考/" title="未来的职业规划参考">
-  <strong>上一篇：</strong><br/>
-  <span>
-  未来的职业规划参考</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/05/07/期权浅析/"  title="期权浅析">
+<a href="/2015/07/03/JStorm入门/"  title="">
  <strong>下一篇：</strong><br/> 
- <span>期权浅析
+ <span>(no title)
 </span>
 </a>
 </div>
@@ -178,7 +152,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/05/13/7 storm的定时任务/" data-title="storm的定时任务" data-url="http://www.eechodsmy.com/2015/05/13/7 storm的定时任务/"></div>
+	<div class="ds-thread" data-thread-key="2015/07/03/广告基础知识/" data-title="" data-url="http://www.eechodsmy.com/2015/07/03/广告基础知识/"></div>
 </section>
 
 
@@ -194,7 +168,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Storm中的定时"><span class="toc-number">1.</span> <span class="toc-text">Storm中的定时</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#isTickTuple_定时触发"><span class="toc-number">1.1.</span> <span class="toc-text">isTickTuple 定时触发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计时器线程timer_(backtype-storm-timer)"><span class="toc-number">1.2.</span> <span class="toc-text">计时器线程timer (backtype.storm.timer)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#原理"><span class="toc-number">1.2.1.</span> <span class="toc-text">原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java_Timer的使用"><span class="toc-number">1.3.</span> <span class="toc-text">Java Timer的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven的第三方包管理"><span class="toc-number">1.4.</span> <span class="toc-text">Maven的第三方包管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务"><span class="toc-number">1.5.</span> <span class="toc-text">定时任务</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#广告基础知识"><span class="toc-number">1.</span> <span class="toc-text">广告基础知识</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">2.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dsp"><span class="toc-number">3.</span> <span class="toc-text">dsp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1_DSP特点"><span class="toc-number">3.1.</span> <span class="toc-text">1 DSP特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2_DSP核心特征"><span class="toc-number">3.2.</span> <span class="toc-text">2 DSP核心特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3_RTB模式"><span class="toc-number">3.3.</span> <span class="toc-text">3 RTB模式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ali术语"><span class="toc-number">4.</span> <span class="toc-text">ali术语</span></a></li></ol>
  
   </div>
 

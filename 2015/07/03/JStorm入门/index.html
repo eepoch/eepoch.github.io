@@ -1,0 +1,668 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Epoch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Epoch">
+    
+
+    
+    <meta name="description" content="JStorm入门Wiki
+基本概念TupleJStorm将流中数据抽象为tuple，一个tuple就是一个值列表value list，list中的每个value都有一个name，并且该value可以是基本类型，字符类型，字节数组等，当然也可以是其他可序列化的类型。拓扑的每个节点都要说明它所发射出的元组的字段的name，其他节点只需要订阅该name就可以接收处理。
+Worker/TaskWorker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Epoch">
+<meta property="og:url" content="http://www.eechodsmy.com/2015/07/03/JStorm入门/index.html">
+<meta property="og:site_name" content="Epoch">
+<meta property="og:description" content="JStorm入门Wiki
+基本概念TupleJStorm将流中数据抽象为tuple，一个tuple就是一个值列表value list，list中的每个value都有一个name，并且该value可以是基本类型，字符类型，字节数组等，当然也可以是其他可序列化的类型。拓扑的每个节点都要说明它所发射出的元组的字段的name，其他节点只需要订阅该name就可以接收处理。
+Worker/TaskWorker">
+<meta property="og:image" content="https://camo.githubusercontent.com/781c0b935239c46d8d65a671c2375048959c19a4/687474703a2f2f34322e3132312e31392e3135352f6a73746f726d2f6172636869746563747572652e6a7067">
+<meta property="og:image" content="http://dl2.iteye.com/upload/attachment/0104/5046/9a7ab2eb-0721-3543-8dff-aef9519eb04c.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Epoch">
+<meta name="twitter:description" content="JStorm入门Wiki
+基本概念TupleJStorm将流中数据抽象为tuple，一个tuple就是一个值列表value list，list中的每个value都有一个name，并且该value可以是基本类型，字符类型，字节数组等，当然也可以是其他可序列化的类型。拓扑的每个节点都要说明它所发射出的元组的字段的name，其他节点只需要订阅该name就可以接收处理。
+Worker/TaskWorker">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Epoch" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.jpg">
+    
+    
+    <link rel="apple-touch-icon" href="/img/favicon.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/favicon.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Epoch">Epoch</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:www.eechodsmy.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/07/03/JStorm入门/" title="" itemprop="url"></a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Epoch" target="_blank" itemprop="author">Epoch</a>
+		
+  <p class="article-time">
+    <time datetime="2015-07-03T10:37:42.926Z" itemprop="datePublished"> 发表于 2015-07-03</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JStorm入门"><span class="toc-number">1.</span> <span class="toc-text">JStorm入门</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">2.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tuple"><span class="toc-number">2.1.</span> <span class="toc-text">Tuple</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker/Task"><span class="toc-number">2.2.</span> <span class="toc-text">Worker/Task</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#资源slot"><span class="toc-number">2.3.</span> <span class="toc-text">资源slot</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#架构"><span class="toc-number">3.</span> <span class="toc-text">架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#角色"><span class="toc-number">3.1.</span> <span class="toc-text">角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内核改进"><span class="toc-number">3.2.</span> <span class="toc-text">内核改进</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#模型简化"><span class="toc-number">3.2.1.</span> <span class="toc-text">模型简化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多维度资源调度"><span class="toc-number">3.2.2.</span> <span class="toc-text">多维度资源调度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网络通信层"><span class="toc-number">3.2.3.</span> <span class="toc-text">网络通信层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#采样重构"><span class="toc-number">3.2.4.</span> <span class="toc-text">采样重构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Worker/Task内部异步化"><span class="toc-number">3.2.5.</span> <span class="toc-text">Worker/Task内部异步化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新特性"><span class="toc-number">3.3.</span> <span class="toc-text">新特性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ack_机制"><span class="toc-number">4.</span> <span class="toc-text">Ack 机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何关闭Ack机制"><span class="toc-number">4.1.</span> <span class="toc-text">如何关闭Ack机制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#应用场景"><span class="toc-number">5.</span> <span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0-9-0_性能测试"><span class="toc-number">6.</span> <span class="toc-text">0.9.0 性能测试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">6.1.</span> <span class="toc-text">结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原因"><span class="toc-number">6.2.</span> <span class="toc-text">原因</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JStorm实现的关键流程"><span class="toc-number">7.</span> <span class="toc-text">JStorm实现的关键流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#运维"><span class="toc-number">8.</span> <span class="toc-text">运维</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用配置"><span class="toc-number">9.</span> <span class="toc-text">常用配置</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="JStorm入门">JStorm入门</h1><p><a href="https://github.com/alibaba/jstorm/wiki" target="_blank" rel="external">Wiki</a></p>
+<h1 id="基本概念">基本概念</h1><h2 id="Tuple">Tuple</h2><p>JStorm将流中数据抽象为tuple，一个tuple就是一个值列表value list，list中的每个value都有一个name，并且该value可以是基本类型，字符类型，字节数组等，当然也可以是其他可序列化的类型。拓扑的每个节点都要说明它所发射出的元组的字段的name，其他节点只需要订阅该name就可以接收处理。</p>
+<h2 id="Worker/Task">Worker/Task</h2><p>Worker和Task是JStorm中任务的执行单元， 一个worker表示一个进程，一个task表示一个线程， 一个worker可以运行多个task。</p>
+<h2 id="资源slot">资源slot</h2><p>在JStorm中，资源类型分为4种， CPU, Memory，Disk， Port， 不再局限于Storm的port。 即<strong>一个supervisor可以提供多少个CPU slot，多少个Memory slot， 多少个Disk slot， 多少个Port slot。</strong></p>
+<ul>
+<li>一个worker就消耗一个Port slot， 默认一个task会消耗一个CPU slot和一个Memory slot</li>
+<li>当task执行任务较重时，可以申请更多的CPU slot，</li>
+<li>当task需要更多内存时，可以申请更多的内存slot，</li>
+<li>当task 磁盘读写较多时，可以申请磁盘slot，则该磁盘slot给该task独享。</li>
+</ul>
+<h1 id="架构">架构</h1><p>JStorm 从设计的角度，就是一个典型的调度系统。</p>
+<p>Nimbus实现了HA：当一台nimbus挂了，自动热切到备份nimbus。</p>
+<h2 id="角色">角色</h2><ul>
+<li>Nimbus是作为调度器角色</li>
+<li>Supervisor 作为worker的代理角色，负责杀死worker和运行worker</li>
+<li>Worker是task的容器</li>
+<li>Task是真正任务的执行者</li>
+<li>ZK 是整个系统中的协调者</li>
+</ul>
+<p><img src="https://camo.githubusercontent.com/781c0b935239c46d8d65a671c2375048959c19a4/687474703a2f2f34322e3132312e31392e3135352f6a73746f726d2f6172636869746563747572652e6a7067" alt="系统架构图"></p>
+<h2 id="内核改进">内核改进</h2><p>Jstorm在内核上对storm的改进有：</p>
+<ol>
+<li>模型简化</li>
+<li>多维度资源调度</li>
+<li>网络通信层改造</li>
+<li>采样重构</li>
+<li>worker/task内部异步化处理</li>
+<li>classload、HA</li>
+</ol>
+<h3 id="模型简化">模型简化</h3><p>模型简化将storm的三层管理模型简化为两层<br><img src="http://dl2.iteye.com/upload/attachment/0104/5046/9a7ab2eb-0721-3543-8dff-aef9519eb04c.png" alt="model"></p>
+<p> jstorm中task直接对应了线程概念，而在storm中是task只是线程executor的一个执行逻辑单元。</p>
+<h3 id="多维度资源调度">多维度资源调度</h3><p>分为cpu、memory、net、disk四个维度，默认情况下：</p>
+<ul>
+<li>cpu slots = 机器核数 * 2 -1</li>
+<li>memory slots = 机器物理内存 / 1024M</li>
+<li>net slots = min(cpu slots, memory slots)</li>
+</ul>
+<h3 id="网络通信层">网络通信层</h3><p>采用了netty + disruptor 替换 zmq + blockingQueue</p>
+<h3 id="采样重构">采样重构</h3><p>a. 定义了滚动时间窗口<br>b. 优化缓存map性能<br>c. 增量采样时间以及减少无谓数据</p>
+<h3 id="Worker/Task内部异步化">Worker/Task内部异步化</h3><p><strong>异步化</strong>和<strong>回调</strong>是流式框架最基本的两大特征，Jstorm在task的计算中将nextTuple和ack/fail的逻辑分离开来，并在worker中采用单独线程负责流入、流出数据的反序列化及序列化工作</p>
+<h2 id="新特性">新特性</h2><p>现有Storm（0.9.0 已经fix）会有如下问题，JStorm没有。</p>
+<ul>
+<li>添加supervisor时， 会触发任务rebalance</li>
+<li>Supervisor shutdown时， 触发任务rebalance</li>
+<li>提交新任务时，当worker数不够时，触发其他任务做rebalance</li>
+</ul>
+<p>新上线的任务不会冲击老的任务，减少任务竞争</p>
+<ul>
+<li>采用cgroups对资源进行硬隔离，保证程序之间CPU不发生抢占</li>
+</ul>
+<p>解决Disruptor急剧消耗CPU问题</p>
+<ul>
+<li>当原生Disruptor队列慢时， 生产方会不断轮询检查Disruptor队列是否有空的slot， 极大消耗队列<br>Cpu利用率从300%降到10%</li>
+</ul>
+<p>优化GC， 减少因GC 导致误认worker死掉</p>
+<p>Storm经常杀死worker不彻底，导致后续无法启动worker</p>
+<p>同一台机器上只启动一个supervisor/nimbus，避免运维误操作导致丢失大量任务</p>
+<p>减少netty不断重连，占用太多的临时端口</p>
+<p>减少对ZK的访问量：</p>
+<ul>
+<li>去掉大量无用的watch</li>
+<li>task的心跳时间延长一倍</li>
+<li>Task心跳检测无需全ZK扫描</li>
+</ul>
+<p><a href="https://github.com/alibaba/jstorm/blob/master/history.md" target="_blank" rel="external">超过100多项优化</a></p>
+<ul>
+<li>自动清理残留的worker</li>
+<li>任务分配算法单线程执行，避免同一slot被分配不通worker</li>
+<li>被reassign的worker的启动超时时间为4分钟</li>
+<li>优化shutdown过程，优雅退出</li>
+<li>对thrift异常进行catch</li>
+<li>避免rebalance时，topology被误删</li>
+</ul>
+<h1 id="Ack_机制">Ack 机制</h1><p>storm的一个创新点， JStorm很好的继承了这个机制，做了一点点代码优化。</p>
+<p>通过Ack机制，spout发送出去的每一条消息，都可以确定是被成功处理或失败处理。</p>
+<p>当spout触发fail动作时，不会自动重发失败的tuple，需要spout自己重新获取数据，手动重新再发送一次</p>
+<p>ack机制即， spout发送的每一条消息，</p>
+<ul>
+<li>在规定的时间内，spout收到Acker的ack响应，即认为该tuple 被后续bolt成功处理</li>
+<li>在规定的时间内，没有收到Acker的ack响应tuple，就触发fail动作，即认为该tuple处理失败，</li>
+<li>或者收到Acker发送的fail响应tuple，也认为失败，触发fail动作</li>
+</ul>
+<blockquote>
+<p>Ack机制还常用于<strong>限流作用</strong>： 为了避免spout发送数据太快，而bolt处理太慢，常常设置pending数，当spout有等于或超过pending数的tuple没有收到ack或fail响应时，跳过执行nextTuple， 从而限制spout发送数据。</p>
+<ul>
+<li>通过<code>conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, pending);</code> 设置spout pend数。</li>
+</ul>
+</blockquote>
+<h2 id="如何关闭Ack机制">如何关闭Ack机制</h2><ul>
+<li>spout发送数据是不带上msgid</li>
+<li>设置acker数等于0:  <code>conf.put(Config.TOPOLOGY_ACKERS , 0);</code></li>
+</ul>
+<h1 id="应用场景">应用场景</h1><p> Jstorm主要应用场景有：</p>
+<ol>
+<li>信息流处理，如聚合、分析等</li>
+<li>持续计算，如实时数据统计、监控</li>
+<li>分布式rpc调用</li>
+</ol>
+<h1 id="0-9-0_性能测试">0.9.0 性能测试</h1><p><a href="https://github.com/alibaba/jstorm/wiki/0.9.0-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95" target="_blank" rel="external">参考文档</a><br><a href="https://github.com/longdafeng/storm-examples" target="_blank" rel="external">代码工程</a><br>JStorm 0.9.0 性能非常的好， 使用netty时单worker 发送最大速度为11万QPS， 使用zeromq时，最大速度为12万QPS.</p>
+<blockquote>
+<p>QPS: 吞吐量，每秒查询率(Query Per Second) </p>
+</blockquote>
+<h2 id="结论">结论</h2><ul>
+<li>JStorm 0.9.0 在使用Netty的情况下，比Storm 0.9.0 使用netty情况下，快10%， 并且JStorm netty是稳定的而Storm 的Netty是不稳定的</li>
+<li>在使用ZeroMQ的情况下， JStorm 0.9.0 比Storm 0.9.0 快30%</li>
+</ul>
+<h2 id="原因">原因</h2><ul>
+<li>Zeromq 减少一次内存拷贝</li>
+<li>增加反序列化线程</li>
+<li>重写采样代码，大幅减少采样影响</li>
+<li>优化ack代码</li>
+<li>优化缓冲map性能</li>
+<li>Java 比clojure更底层</li>
+</ul>
+<h1 id="JStorm实现的关键流程">JStorm实现的关键流程</h1><p>有兴趣的可以参考源码和<a href="http://luoshi0801.iteye.com/blog/2168848" target="_blank" rel="external">博客</a></p>
+<h1 id="运维">运维</h1><ul>
+<li>启动节点服务：<ul>
+<li>./jstorm nimbus</li>
+<li>./jstorm supervisor</li>
+</ul>
+</li>
+</ul>
+<h1 id="常用配置">常用配置</h1><p>jstorm是用zookeeper来管理的，下面来看conf/storm.yaml中的常用配置：</p>
+<ul>
+<li>storm.zookeeper.servers：zookeeper集群地址。</li>
+<li>storm.zookeeper.root：zookeeper中storm的根目录位置。</li>
+<li>storm.local.dir：用来存放配置文件、JAR等。</li>
+<li><strong>storm.messaging.netty.transfer.async.batch</strong>：在使用Netty的时候，设置是否一个batch中会有多个消息。</li>
+<li>java.library.path：本地库的加载地址，比如zeromq、jzmq等。</li>
+<li>supervisor.slots.ports：supervisor节点上的worker使用的端口号列表。</li>
+<li><strong>supervisor.enable.cgroup</strong>：是否使用cgroups来做资源隔离。</li>
+<li><strong>topology.buffer.size.limited</strong>：是否限制内存，如果不限制将使用LinkedBlockingDeque。</li>
+<li>topology.performance.metrics：是否开启监控。</li>
+<li>topology.alimonitor.metrics.post：是否将监控数据发送给AliMonitor。</li>
+<li><strong>topology.enable.classloader</strong>：默认禁用了用户自定义的类加载器。</li>
+<li>worker.memory.size：worker的内存大小。</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.eechodsmy.com/2015/07/03/JStorm入门/" data-title="Epoch" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/07/03/广告基础知识/" title="">
+  <strong>上一篇：</strong><br/>
+  <span>
+  (no title)</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/07/03/JStorm内部/"  title="">
+ <strong>下一篇：</strong><br/> 
+ <span>(no title)
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/07/03/JStorm入门/" data-title="" data-url="http://www.eechodsmy.com/2015/07/03/JStorm入门/"></div>
+</section>
+
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JStorm入门"><span class="toc-number">1.</span> <span class="toc-text">JStorm入门</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">2.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tuple"><span class="toc-number">2.1.</span> <span class="toc-text">Tuple</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker/Task"><span class="toc-number">2.2.</span> <span class="toc-text">Worker/Task</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#资源slot"><span class="toc-number">2.3.</span> <span class="toc-text">资源slot</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#架构"><span class="toc-number">3.</span> <span class="toc-text">架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#角色"><span class="toc-number">3.1.</span> <span class="toc-text">角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内核改进"><span class="toc-number">3.2.</span> <span class="toc-text">内核改进</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#模型简化"><span class="toc-number">3.2.1.</span> <span class="toc-text">模型简化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多维度资源调度"><span class="toc-number">3.2.2.</span> <span class="toc-text">多维度资源调度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网络通信层"><span class="toc-number">3.2.3.</span> <span class="toc-text">网络通信层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#采样重构"><span class="toc-number">3.2.4.</span> <span class="toc-text">采样重构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Worker/Task内部异步化"><span class="toc-number">3.2.5.</span> <span class="toc-text">Worker/Task内部异步化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新特性"><span class="toc-number">3.3.</span> <span class="toc-text">新特性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ack_机制"><span class="toc-number">4.</span> <span class="toc-text">Ack 机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何关闭Ack机制"><span class="toc-number">4.1.</span> <span class="toc-text">如何关闭Ack机制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#应用场景"><span class="toc-number">5.</span> <span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0-9-0_性能测试"><span class="toc-number">6.</span> <span class="toc-text">0.9.0 性能测试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">6.1.</span> <span class="toc-text">结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原因"><span class="toc-number">6.2.</span> <span class="toc-text">原因</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JStorm实现的关键流程"><span class="toc-number">7.</span> <span class="toc-text">JStorm实现的关键流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#运维"><span class="toc-number">8.</span> <span class="toc-text">运维</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用配置"><span class="toc-number">9.</span> <span class="toc-text">常用配置</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Epoch/" title="Epoch">Epoch<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/life/" title="life">life<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/storm/" title="storm">storm<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/tool/" title="tool">tool<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/storm/" title="storm">storm<sup>10</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/life/" title="life">life<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/install/" title="install">install<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/travel/" title="travel">travel<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/reading/" title="reading">reading<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/clothes/" title="clothes">clothes<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/One-Piece/" title="One Piece">One Piece<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/职业/" title="职业">职业<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ECHO/" title="ECHO">ECHO<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/java/" title="java">java<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/摄影/" title="摄影">摄影<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/picture/" title="picture">picture<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shell/" title="shell">shell<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/技巧/" title="技巧">技巧<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.zcool.com.cn/u/13094813" target="_blank" title="EPOCH&#39;s Blog">EPOCH&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="widget tag">
+<p class="asidetitle">博主簡介</p>
+<ul class="entry">
+<li>ECHO</li>
+<li>现状：正在奋斗ing。</li>
+</ul>
+</div> 
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 不善于颠覆旧世界， <br/>
+			也能创造新世界。</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1717383477" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="Epoch">Epoch</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ECHO"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'ECHO';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
